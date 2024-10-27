@@ -1,0 +1,29 @@
+
+# set environment variables
+source $HOME/.config/zsh/environment.zsh
+
+export GTK_THEME=Adwaita:dark
+export QT_STYLE_OVERRIDE=Adwaita-Dark
+
+zstyle ':completion:*' completer _complete _ignored
+zstyle :compinstall filename '/home/erik/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=1000
+SAVEHIST=10000
+bindkey -v
+
+# gtk
+# gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+
+source $ZSH_CONFIG/fzf.zsh
+
+alias rlwb="pkill waybar && hyprctl dispatch exec waybar"
+
+# fnm
+eval "$(fnm env)"
+eval "$(fnm completions --shell zsh)"
