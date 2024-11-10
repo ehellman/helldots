@@ -27,3 +27,6 @@ alias rlwb="pkill waybar && hyprctl dispatch exec waybar"
 # fnm
 eval "$(fnm env)"
 eval "$(fnm completions --shell zsh)"
+
+# starship
+eval "$(starship init zsh)"
