@@ -20,7 +20,7 @@ bindkey -v
 # gtk
 # gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
-export SSH_AUTH_SOCK=~/.1password/agent.sock
+export SSH_AUTH_SOCK=$HOME/.1password/agent.sock
 
 source $ZSH_CONFIG/fzf.zsh
 
