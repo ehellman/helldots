@@ -1,6 +1,7 @@
 
 # set environment variables
 source $HOME/.config/zsh/environment.zsh
+source $HOME/.config/zsh/aliases.zsh
 
 # linux-specific
 export GTK_THEME=Adwaita:dark
@@ -31,5 +32,5 @@ alias rlwb="pkill waybar && hyprctl dispatch exec waybar"
 eval "$(fnm env)"
 eval "$(fnm completions --shell zsh)"
 
-# starship
+# starship prompt
 eval "$(starship init zsh)"
