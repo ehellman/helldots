@@ -2,6 +2,7 @@
 # set environment variables
 source $HOME/.config/zsh/environment.zsh
 
+# linux-specific
 export GTK_THEME=Adwaita:dark
 export QT_STYLE_OVERRIDE=Adwaita-Dark
 

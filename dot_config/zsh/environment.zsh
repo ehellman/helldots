@@ -4,6 +4,8 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export ZSH_CONFIG="$XDG_CONFIG_HOME/zsh"
 
+# Make nvim default editor
+export EDITOR=nvim
 
 if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
   # enable wayland env variables for firefox
