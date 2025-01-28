@@ -1,0 +1,93 @@
+#!/bin/bash
+DEBUG=false  # Set to true to enable debug logging
+
+logger() {
+  local message="[udev:powersave] $1"
+  
+  # Always echo to stdout
+  echo "$message"
+  
+  # If debug mode is on, also log to file
+  if [ "$DEBUG" = true ]; then
+    echo "$message" >> /tmp/powersave.log
+  fi
+}
+
+# Debug logger - only logs if DEBUG is true
+debug_logger() {
+  if [ "$DEBUG" = true ]; then
+    echo "[udev:powersave:debug] $1" >> /tmp/powersave.log
+  fi
+}
+
+# Function to run commands silently but log on error
+run_silent() {
+  local cmd_output
+  cmd_output=$("$@" 2>&1)
+  local exit_code=$?
+  
+  if [ $exit_code -ne 0 ]; then
+    debug_logger "Command '$*' failed with exit code $exit_code"
+    debug_logger "Output: $cmd_output"
+  else
+    debug_logger "Command '$*' succeeded"
+  fi
+  return $exit_code
+}
+
+function run() {
+  DBUS=unix:path=/run/user/$(id -u {{ .chezmoi.username }})/bus
+  cd /home/{{ .chezmoi.username }} || exit
+  sudo -u {{ .chezmoi.username }} DBUS_SESSION_BUS_ADDRESS="$DBUS" /usr/bin/systemd-run --user --property=TimeoutStopSec=1 --property=KillMode=mixed "$@"
+}
+
+# if ran as root, run as user instead
+if [ "$EUID" -eq 0 ]; then
+    debug_logger "Running as root, switching to user"
+    run $0 "$@"
+    debug_logger "Exit code: $?"
+    exit 0
+fi
+
+parse_hyprctl_output() {
+  local output="$1"
+  echo "$output" | awk -F: '/^int:/ {current=$2} /^set:/ {config=$2} END {print current, config}'
+}
+
+# Get and parse shadow and blur options
+hypr_deco_shadow_output=($(parse_hyprctl_output "$(hyprctl getoption decoration:shadow:enabled 2>/dev/null)"))
+hypr_deco_blur_output=($(parse_hyprctl_output "$(hyprctl getoption decoration:blur:enabled 2>/dev/null)"))
+hypr_shadow_enabled="${hypr_deco_shadow_output[1]}"
+hypr_blur_enabled="${hypr_deco_blur_output[1]}"
+
+# Logic for power-saving mode
+if [ "$1" = "true" ]; then
+  logger "Switching to powersaver mode..."
+  
+  logger "Reducing brightness..."
+  run_silent brightnessctl -s set 40
+  
+  logger "Setting power-saver CPU profile..."
+  run_silent powerprofilesctl set power-saver
+  
+  logger "Adjusting Hyprland settings..."
+  [ "$hypr_blur_enabled" = "true" ] && run_silent hyprctl keyword decoration:blur:enabled false
+  [ "$hypr_shadow_enabled" = "true" ] && run_silent hyprctl keyword decoration:shadow:enabled false
+  
+elif [ "$1" = "false" ]; then
+  logger "Switching to balanced mode..."
+  
+  logger "Restoring brightness..."
+  run_silent brightnessctl -r
+  
+  logger "Setting balanced CPU profile..."
+  run_silent powerprofilesctl set balanced
+  
+  logger "Restoring Hyprland settings..."
+  [ "$hypr_blur_enabled" = "true" ] && run_silent hyprctl keyword decoration:blur:enabled true
+  [ "$hypr_shadow_enabled" = "true" ] && run_silent hyprctl keyword decoration:shadow:enabled true
+  
+else
+  logger "Invalid argument. Use 'true' for power-saver mode or 'false' for balanced mode."
+  exit 1
+fi

@@ -34,6 +34,7 @@ source $HOME/.config/op/plugins.sh
 # fnm
 eval "$(fnm env)"
 eval "$(fnm completions --shell zsh)"
+eval "$(tailscale completion zsh)"
 
 # starship prompt
 eval "$(starship init zsh)"
