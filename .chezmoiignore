@@ -1,0 +1,20 @@
+.chezmoiscripts/**/*
+!.chezmoiscripts/{{ .host.distro.id }}/**/*
+!.chezmoiscripts/{{ .host.distro.family }}/**/*
+.DS_Store
+
+{{- if ne .host.distro.id "windows" }}
+!.chezmoiscripts/_universal/**/*
+!.chezmoiscripts/universal/**/*
+{{- end }}
+
+{{- if ne .host.distro.family "darwin" }}
+{{- end }}
+
+{{- if ne .host.distro.family "linux" }}
+
+{{- end }}
+
+{{- if ne .host.distro.family "windows" }}
+App Data/
+{{- end }}

@@ -2,22 +2,41 @@
 # http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_RUNTIME_DIR="/tmp"
+#{{- if eq .host.distro.family "darwin" -}}
+#  "$TMPDIR"
+#{{- else if not .host.headless -}}
+#  "/run/user/$(id -u)"
+#{{- else -}}
+#  "/tmp"
+#{{- end }}
+
 export ZSH_CONFIG="$XDG_CONFIG_HOME/zsh"
 
 # Make nvim default editor
 export EDITOR=nvim
 
+# ripgrep
+export RIPGREP_CONFIG_PATH="$XDG_CONFIG/ripgrep/.ripgreprc"
+
 ### MANPAGER
 
-### "bat" as manpager
+## "bat" as manpager
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-### "vim" as manpager
+## "vim" as manpager
 # export MANPAGER='/bin/bash -c "vim -MRn -c \"set buftype=nofile showtabline=0 ft=man ts=8 nomod nolist norelativenumber nonu noma\" -c \"normal L\" -c \"nmap q :qa<CR>\"</dev/tty <(col -b)"'
 
-### "nvim" as manpager
+## "nvim" as manpager
 # export MANPAGER="nvim -c 'set ft=man' -"
 
+### bat
+export BAT_CONFIG_PATH="$XDG_CONFIG_HOME/bat/config"
+
+### cargo
+export CARGO_HOME="$XDG_DATA_HOME/cargo"
 
 
 if [[ $XDG_SESSION_TYPE == "wayland" ]]; then

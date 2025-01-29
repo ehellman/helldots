@@ -1,40 +1,60 @@
 
 # set environment variables
 source $HOME/.config/zsh/environment.zsh
-source $HOME/.config/zsh/aliases.zsh
+source $ZSH_CONFIG/aliases.zsh
 
 # linux-specific
-export GTK_THEME=Adwaita:dark
+export GTK_THEME=Adwaita-dark
 export QT_STYLE_OVERRIDE=Adwaita-Dark
 
 zstyle ':completion:*' completer _complete _ignored
 zstyle :compinstall filename '/home/erik/.zshrc'
 
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
-# Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=10000
+# cache the generation of completions
+source $ZSH_CONFIG/compinit.zsh
+
+HISTSIZE=9999999 # Lines of history to keep in memory for current session
+HISTFILESIZE=9999999 # Number of commands to save in the file
+SAVEHIST=9999999 # Number of history entries to save to disk
+HISTFILE=$HOME/.zsh_history # Where to save history to disk
+HISTDUP=erase # Erase duplicates in the history file
+setopt hist_ignore_dups # Ignore duplicates
+setopt append_history # Append history to the history file (no overwriting)
+setopt share_history # Share history across terminals
+setopt inc_append_history # Immediately append to the history file, not just when a term is killed
+setopt extended_glob # Use extended globbing syntax
+setopt HIST_IGNORE_SPACE # Prefix a command with space to exclude it from history
+
+# vim mode
 bindkey -v
-
-# gtk
-# gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-
-export SSH_AUTH_SOCK=$HOME/.1password/agent.sock
 
 source $ZSH_CONFIG/fzf.zsh
 
+# 1password - use SSH agent
+export SSH_AUTH_SOCK=$HOME/.1password/agent.sock
+
+# 1password - load plugins
+source $XDG_CONFIG_HOME/op/plugins.sh
+
+# reload waybar
 alias rlwb="pkill waybar && hyprctl dispatch exec waybar"
 
-# load 1password plugins
-source $HOME/.config/op/plugins.sh
+# atuin
+eval "$(atuin init zsh)"
+
+# zoxide
+eval "$(zoxide init zsh)"
 
 # fnm
 eval "$(fnm env)"
 eval "$(fnm completions --shell zsh)"
+
+# mise
+eval "$(mise activate zsh)"
+
+# tailscale
 eval "$(tailscale completion zsh)"
 
 # starship prompt
+eval "$(starship completions zsh)"
 eval "$(starship init zsh)"

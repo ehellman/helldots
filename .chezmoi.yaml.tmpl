@@ -1,0 +1,49 @@
+{{- $data := . }}
+{{- $_ := set $data "host" (default (dict) (get $data "host")) -}}
+{{- $_ := set $data "user" (default (dict) (get $data "user")) -}}
+
+{{- $headless := false -}}
+{{- $ephemeral := false -}}
+{{/* detect GitHub codespaces, VSCode remote containers, Docker containers, Multipass VMs, and Vagrant boxes */}}
+{{- $ephemeralEnvOrUsername := or (env "CODESPACES") (env "REMOTE_CONTAINERS_IPC") (eq .chezmoi.username "root" "ubuntu" "vagrant" "vscode" "devcontainer") -}}
+{{- $ephemeralCgroup := and (stat "/proc/1/cgroup") (output "cat" "/proc/1/cgroup" | regexMatch "(docker|lxc)") -}}
+{{- if or $ephemeralEnvOrUsername $ephemeralCgroup -}}
+{{-   $headless = true -}}
+{{-   $ephemeral = true -}}
+{{-   writeToStdout "Chezmoi is running in a container.\n" -}}
+{{- end -}}
+
+{{- $chassisType := "desktop" }}
+{{- if $ephemeral -}}
+{{-   $chassisType = "ephemeral" }}
+{{- else if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{-     $chassisType = "wsl" }}
+{{-   else -}}
+{{-     $chassisType = (output "hostnamectl" "chassis") }}
+{{-   end -}}
+{{- else if eq .chezmoi.os "darwin" }}
+{{-   if contains "MacBook" (output "sysctl" "-n" "hw.model") }}
+{{-     $chassisType = "laptop" }}
+{{-   else }}
+{{-     $chassisType = "desktop" }}
+{{-   end }}
+{{- else if eq .chezmoi.os "windows" }}
+{{-   $chassisType = (output "powershell.exe" "-noprofile" "-command" "if (Get-WmiObject -Class win32_battery -ComputerName localhost) { echo laptop } else { echo desktop }") }}
+{{- end }}
+
+{{- $hostname := .chezmoi.hostname }}
+
+data:
+  host:
+    arch: "{{ .chezmoi.arch }}"
+    distro:
+      family: "{{ .chezmoi.os }}"
+      id: "{{ get .chezmoi.osRelease "id" | default .chezmoi.os }}"
+    homeParentFolder: "{{ if eq .chezmoi.os "linux" }}/home{{ else if eq .chezmoi.os "darwin" }}/Users{{ else }}C:\Users{{ end }}"
+    headless: "{{ $headless }}"
+    hostname: "{{ $hostname | lower | trim -}}"
+    type: "{{ $chassisType | lower | trim -}}"
+  domains:
+    home: "hellhe.im"
+    personal: "erikhellman.com"

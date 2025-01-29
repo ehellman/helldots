@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+{{ if eq .host.distro.id "arch" -}}
+{{ range .packages.pacman -}}
+sudo pacman -Sy {{ . | quote }}
+{{ end -}}
+{{ end -}}
