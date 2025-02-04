@@ -1,0 +1,376 @@
+/* @import url("file:///home/flexksx/.config/wallust/templates/colors-gtk3.css"); */
+@import url("colors.css");
+@import url("./modules-right/modules-right-import.css");
+@import url("./modules-center/modules-center-import.css");
+@import url("./modules-left/modules-left-import.css");
+
+* {
+  /* `otf-font-awesome` is required to be installed for icons */
+  font-family: "0xProto Nerd Font Mono";
+  font-size: 13px;
+}
+
+tooltip {
+  border-radius: 4px;
+  background-color: @base;
+  border: 2px solid @surface0;
+  padding: 5px;
+}
+
+tooltip label {
+  color: @text;
+}
+
+/* Overall Waybar styling */
+window#waybar {
+  min-height: 30px;
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  border-radius: 24px;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.modules-left {
+  border-radius: 24px;
+}
+
+.modules-center {}
+
+.modules-right {
+  background-color: @base;
+  /*padding: 2px;*/
+  border: 2px solid @surface0;
+  border-radius: 24px;
+}
+
+#custom-separator {
+  font-size: 30px;
+  background-color: transparent;
+  color: @base;
+}
+
+button {
+  /* Use box-shadow instead of border so the text isn't offset */
+  /*box-shadow: inset 0 -3px transparent;*/
+  /* Avoid rounded borders under each button name */
+  border: none;
+  border-radius: 0;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+  background: inherit;
+  /*box-shadow: inset 0 -3px #ffffff;*/
+}
+
+#mode {
+  background-color: #64727d;
+  /*box-shadow: inset 0 -3px #ffffff;*/
+}
+
+#battery,
+#memory,
+#disk,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-notification,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#power-profiles-daemon,
+#custom-gputemp,
+#mpd {
+  padding: 0 8px;
+  color: @text;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left>widget:first-child>#workspaces {
+  margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right>widget:last-child>#workspaces {
+  margin-right: 0;
+}
+
+@keyframes blink {
+  to {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}
+
+#power-profiles-daemon {
+  border-radius: 50%;
+  font-size: 24px;
+}
+
+#power-profiles-daemon:hover {
+  background-color: @surface0;
+}
+
+#power-profiles-daemon.performance {
+  color: @red;
+}
+
+#power-profiles-daemon.balanced {
+  color: @yellow;
+}
+
+#power-profiles-daemon.power-saver {
+  color: @green;
+}
+
+#custom-notification {
+  font-size: 24px;
+}
+
+label:focus {
+  background-color: #000000;
+}
+
+#custom-logo {
+  background-image: url('/home/erik/.config/waybar/void.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+#cpu {
+  background-color: transparent;
+  font-size: 10px;
+  /*border-radius: 0 24px 24px 0;*/
+  color: @text;
+  padding: 0 4px 0 8px;
+  /* margin-bottom: -16px; */
+  /* margin-left: -120px; */
+}
+
+#memory {
+  background-color: @surface0;
+}
+
+#disk {
+  background-color: @base;
+}
+
+#backlight {
+  background-color: @base;
+}
+
+#network {
+  background-color: #2980b9;
+}
+
+#network.disconnected {
+  background-color: #f53c3c;
+}
+
+/* ------------------------------------------------ */
+
+#language {
+  color: @subtext0;
+  transition: color 0.3s;
+  font-size: 12px;
+  margin: 0 4px;
+}
+
+#language:hover {
+  color: @text;
+}
+
+/* ------------------------------------------------ */
+
+#pulseaudio,
+#wireplumber {
+  background-color: @base;
+  /* border-radius: 24px; */
+  color: @text;
+}
+
+#pulse-input-group:hover #pulseaudio.microphone-label,
+#pulse-input-group:hover #pulseaudio.microphone {
+  background-color: @surface0;
+  transition: background-color 0.3s;
+}
+#pulseaudio.microphone-label {
+  padding-left: 6px;
+  padding-right: 0;
+}
+#pulseaudio.microphone-label.source-muted {
+  color: @overlay2;
+}
+#pulseaudio.microphone {
+  font-size: 16px;
+}
+#pulseaudio.microphone:hover {
+  /* background-color: @surface0; */
+}
+#pulseaudio.microphone.source-muted {
+  color: @red;
+  font-size: 20px;
+}
+
+/* #pulse-output-group:hover #pulseaudio.output,
+#pulse-output-group:hover #pulseaudio-slider {
+  background-color: @surface0;
+} */
+#pulseaudio.output {
+  font-size: 16px;
+}
+#pulseaudio.output.muted {
+  color: @red;
+  font-size: 20px;
+}
+
+#wireplumber.muted {
+  background-color: @red;
+  color: @base;
+}
+
+/* ------------------------------------------------ */
+slider {
+	min-height: 0px;
+	min-width: 0px;
+	margin-left: 0px;
+	padding-right: 0px;
+	opacity: 0;
+	background-image: none;
+	border: none;
+	box-shadow: none;
+}
+
+trough {
+	min-height: 10px;
+	min-width: 80px;
+	border-radius: 5px;
+}
+
+highlight {
+	min-height: 10px;
+	border-radius: 5px 0 0 5px;
+}
+
+#pulseaudio-slider {
+  padding-left: 6px;
+  padding-right: 0;
+  background-color: @base;
+}
+
+#pulseaudio-slider slider {
+  background-color: @text;
+}
+#pulseaudio-slider.muted slider {
+  background-color: @red;
+}
+
+#pulseaudio-slider trough {
+  background-color: @surface0;
+}
+
+#pulseaudio-slider highlight {
+  background-color: @lavender;
+}
+
+/* ------------------------------------------------ */
+
+#custom-media {
+  background-color: #66cc99;
+  color: #2a5c45;
+  min-width: 100px;
+}
+
+#custom-media.custom-spotify {
+  background-color: #66cc99;
+}
+
+#custom-media.custom-vlc {
+  background-color: #ffa000;
+}
+
+#temperature {
+  background-color: @surface0;
+  /*border-radius: 24px 0 0 24px;*/
+  color: @text;
+  padding: 0 8px 0 4px;
+}
+
+#temperature.critical {
+  background-color: @background;
+  color: @red;
+}
+
+#tray {
+  background-color: @background;
+}
+
+#tray>.passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray>.needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: @red;
+}
+
+#idle_inhibitor {
+  background-color: #2d3436;
+}
+
+#idle_inhibitor.activated {
+  background-color: #ecf0f1;
+  color: #2d3436;
+}
+
+#mpd {
+  background-color: #66cc99;
+  color: #2a5c45;
+}
+
+#mpd.disconnected {
+  background-color: #f53c3c;
+}
+
+#mpd.stopped {
+  background-color: #90b1b1;
+}
+
+#mpd.paused {
+  background-color: #51a37a;
+}
+
+#scratchpad {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad.empty {
+  background-color: transparent;
+}
+
+#privacy {
+  padding: 0;
+}
+
+#privacy-item {
+  padding: 0 5px;
+  color: white;
+}
+
+#privacy-item.screenshare {
+  background-color: #cf5700;
+}
+
+#privacy-item.audio-in {
+  background-color: #1ca000;
+}
+
+#privacy-item.audio-out {
+  background-color: #0069d4;
+}

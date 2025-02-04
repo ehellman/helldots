@@ -1,0 +1,442 @@
+{
+  // Optional name added as a CSS class, for styling multiple waybars.
+  "name": "main",
+  "layer": "top",
+  
+  "position": "top",
+  "gtk-layer-shell": true,
+  "reload_style_on_change": true,
+  "modules-left": ["cpu", "hyprland/window"],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": [
+    "power-profiles-daemon",
+    "hyprland/submap",
+    "hyprland/language",
+    "backlight",
+    "group/pulse-input-group",
+    "group/pulse-output-group",
+    "temperature",
+    "memory",
+    "disk",
+    "battery",
+    "clock",
+    "group/menu",
+    "tray",
+    "custom/notification"
+  ],
+  "hyprland/workspaces": {
+    // https://man.archlinux.org/man/extra/waybar/waybar-hyprland-workspaces.5.en
+    /*
+       CSS classes:
+       #workspaces
+       #workspaces button
+       #workspaces button.active     - currently focused workspace
+       #workspaces button.empty      - workspace with no windows
+       #workspaces button.visible    - workspace visible on another monitor
+       #workspaces button.persistent - non-empty persistent workspace
+       #workspaces button.special    - special workspace
+       #workspaces button.urgent     - workspace needing attention
+        
+       - (gets applied if workspace-monitor == waybar-monitor)
+       #workspaces button.hosting-monitor - workspace on current monitor
+     */
+    // Format string for workspace display. {id} {name} {icon}
+    "format": "{name}",
+    // Icons for different workspace states
+    "format-icons": {
+      "active": "󰮯",
+      "default": "",
+      "empty": "",
+      "special": "",
+      "visible": "󰻂",
+      "persistent": ""
+    },
+    // If true, disables mouse wheel scrolling through workspaces
+    "disable-scroll": true,
+    // If false, workspaces group will only show on assigned output
+    // If true, all workspace groups are shown on every output
+    "all-outputs": false,
+    // Controls cursor warping when scrolling through workspaces
+    "warp-on-scroll": false,
+    // If true, special workspaces (like scratchpad) will be shown
+    // Can be combined with special-visible-only for more control
+    "show-special": true,
+    // Rules to rewrite window representations in workspaces
+    "window-rewrite": {
+      "class<firefox>": "",
+      "class<code>": "󰨞",
+      "title<.*terminal.*>": ""
+    },
+    // Default representation for windows not matching any rules
+    "window-rewrite-default": "?",
+    // Separator between windows in a workspace
+    "format-window-separator": " ",
+    // Show special workspaces only when they're visible
+    "special-visible-only": false,
+    // Show only the active workspace
+    "active-only": false,
+    // Open workspace on current monitor when clicking
+    "move-to-monitor": false,
+    // Workspaces to ignore (uses regex matching)
+    "ignore-workspaces": [],
+    // Sort order: "default", "number", "name", or "id"
+    "sort-by": "default"
+  },
+  "hyprland/window": {
+    // https://man.archlinux.org/man/extra/waybar/waybar-hyprland-window.5.en
+    /*
+      CSS:
+        Main container
+          #window
+        When no windows are in the workspace
+          window#waybar.empty #window
+
+      The following classes are applied to the entire Waybar rather than just the window widget:
+        When no windows are in the workspace
+          window#waybar.empty
+        When one tiled window is visible in the workspace (floating windows may be present)
+          window#waybar.solo
+        Where <app_id> is the class (e.g. chromium) of the solo tiled window in the workspace (use hyprctl clients to see classes)
+          window#waybar.<app_id>
+        When there are only floating windows in the workspace
+          window#waybar.floating
+        When there is a fullscreen window in the workspace; useful with Hyprland's `fullscreen, 1` mode
+          window#waybar.fullscreen
+        When there is a swallowed window in the workspace
+          window#waybar.swallowing
+    */
+    // The format, how information should be displayed. On {} the current window title is displayed
+    "format": "{title}",
+    // Rules to rewrite window title
+    // "rewrite": {
+    //   "(.*) - Mozilla Firefox": "🌎 $1",
+    //   "(.*) - zsh": "> [$1]"
+    // },
+    "max-length": 50,
+    // Show the active window of the monitor the bar belongs to, instead of the focused window.
+    "separate-outputs": true,
+    // Show the application icon
+    "icon": true,
+    // Change icon size
+    "icon-size": 24
+  },
+  "hyprland/submap": {
+    /* The submap module displays the currently active submap (similar to sway/mode).
+     *
+     * CSS classes:
+     * #submap
+     * #submap.<name> - where <name> is the current submap name
+     */
+    // Format string for submap display. {} is replaced with the active submap name
+    "format": "{}",
+    // Rotate the text label (positive value in degrees)
+    // "rotate": 0,
+    // Maximum number of characters to display
+    // "max-length": 50,
+    // Minimum number of characters to accept
+    // "min-length": 0,
+    // Text alignment within module (0 = left, 1 = right)
+    // "align": 0,
+    // Text alignment within label ('left', 'right', 'center')
+    // "justify": "left",
+    // Show tooltip on hover
+    "tooltip": true,
+    // Display widget even when no submap is active
+    "always-on": true,
+    // Name to display when not in an active submap
+    "default-submap": "Default"
+    // Mouse interaction commands
+    // "on-click": "command",
+    // "on-click-middle": "command",
+    // "on-click-right": "command",
+    // "on-scroll-up": "command",
+    // "on-scroll-down": "command",
+    // Command to execute when module updates
+    // "on-update": "command",
+    // Threshold for smooth scrolling
+    // "smooth-scrolling-threshold": 0,
+    // Menu configuration
+    // "menu": "action",
+    // "menu-file": "/path/to/menu",
+    // "menu-actions": []
+  },
+  "hyprland/language": {
+    /* The language module displays the currently selected keyboard language/layout.
+     *
+     * Format replacements:
+     * {short}            - Short name of layout (e.g. "us"). Equals to {}
+     * {shortDescription} - Short description of layout (e.g. "en")
+     * {long}            - Long name of layout (e.g. "English (Dvorak)")
+     * {variant}         - Variant of layout (e.g. "dvorak")
+     *
+     * CSS classes:
+     * #language
+     */
+    // Format string for language display. Default: {}
+    "format": "{}",
+    "tooltip": true,
+    "tooltip-format": "{shortDescription} - {long} - {variant}",
+    // Specify keyboard device from 'hyprctl devices' output
+    // Recommended to use the one starting with "at-translated-set..."
+    // "keyboard-name": "at-translated-set-2-keyboard",
+    // Custom format for specific languages
+    "format-en": "US",
+    "format-sv": "SE"
+    // Menu configuration
+    // "menu": "action",
+    // "menu-file": "/path/to/menu",
+    // "menu-actions": []
+  },
+  "backlight": {
+    /* The backlight module displays the current screen brightness level.
+     *
+     * CSS classes:
+     * #backlight
+     */
+    // Format string for brightness display. Default: {percent}%
+    "format": "{icon} {percent}%",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    //
+    // Polling interval in seconds
+    "interval": 1,
+    //
+    // Display constraints
+    // "max-length": 0,
+    // "min-length": 0,
+    //
+    // Text alignment and rotation
+    // "align": 0,
+    // "justify": "left",
+    // "rotate": 0,
+    //
+    // States for different brightness levels (adds classnames)
+    // "states": {
+    //   "low": 0,
+    //   "medium": 50,
+    //   "high": 75
+    // },
+    //
+    // Scrolling behavior
+    "scroll-step": 1.0,
+    "reverse-scrolling": true,
+    "smooth-scrolling-threshold": 0
+
+    // Custom scroll commands (replaces default brightness control)
+    // "on-scroll-up": "command",
+    // "on-scroll-down": "command"
+    //
+    // Click handlers
+    // "on-click": "command",
+    // "on-click-middle": "command",
+    // "on-click-right": "command",
+    //
+    // Update handler
+    // "on-update": "command",
+    //
+    // Menu configuration
+    // "menu": "action",
+    // "menu-file": "/path/to/menu",
+    // "menu-actions": []
+  },
+  "tray": {
+    // https://man.archlinux.org/man/extra/waybar/waybar-tray.5.en
+    /*
+      CSS classes:
+        #tray
+        #tray > .passive
+        #tray > .active
+        #tray > .needs-attention
+    */
+    // Defines the size of the tray icons.
+    "icon-size": 20,
+    // Defines visibility of the tray icons with Passive status.
+    "show-passive-items": true,
+    "spacing": 4,
+    // Defines if new app icons should be added in a reverse order
+    "reverse-direction": false
+    // Command to execute when the module is updated
+    // "on-update": "./do-something.sh",
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}",
+    // "format": "{icon0}{icon1}{icon2}{icon3} {usage:>2}%",
+	  "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+    // "max-length": 10
+  },
+  "temperature": {
+    "interval": 10,
+    "critical-threshold": 80,
+    "format": " {temperatureC}°C"
+  },
+  "battery": {
+    "states": {
+      "warning": 25,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "⚡ {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-full": "",
+    "format-alt": "{icon} {time}",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "memory": {
+    "interval": 10,
+    "format": " {used:0.1f}G",
+    "tooltip": true,
+    "tooltip-format": "{used:0.1f} G / {total:0.1f} G"
+  },
+  "disk": {
+    "interval": 60,
+    "format": " {used}"
+  },
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+  "clock": {
+    "format": "{:%H:%M:%S}",
+    "interval": 1,
+    "tooltip-format": "<tt><big>{calendar}</big></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 2,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "on-click-right": "mode",
+      "format": {
+        "months": "<span color='#ffffff'><b>{}</b></span>",
+        "days": "<span color='#ffffff'><b>{}</b></span>",
+        "weeks": "<span color='#a6adc8'><b>W{}</b></span>",
+        "weekdays": "<span color='#a6adc8'><b>{}</b></span>",
+        "today": "<span color='#f38ba8'><b>{}</b></span>"
+      }
+    },
+    "actions": {
+      "on-click": "mode"
+    }
+  },
+  "pulseaudio#microphone": {
+    // "format": "{icon} {source_volume}%",
+    "format": "{format_source}",
+    // "format-muted": "{icon}",
+    "format-source": "󰍬",
+    "format-source-muted": "󰍭",
+    "reverse-scrolling": true,
+    "on-click-right": "pavucontrol -t 4",
+    "on-click": "swayosd-client --input-volume mute-toggle",
+    "on-scroll-up": "swayosd-client --input-volume 1",
+    "on-scroll-down": "swayosd-client --input-volume -1",
+    "tooltip-format": "{source_desc} // {source_volume}%"
+    // "format-icons": {
+    //   // framework 13 microphones
+    //   // "alsa_input.pci-0000_c1_00.6.analog-stereo": "",
+    //   // "alsa_input.pci-0000_c1_00.6.analog-stereo-muted": ""
+    //   // beats fit pro microphone
+    //   "bluez_input.F8:66:5A:33:64:EA": "󱡒",
+    //   "bluez_input.F8:66:5A:33:64:EA-muted": "󱡑",
+    //   "default": "",
+    //   "default-muted": ""
+    // }
+  },
+  "pulseaudio#microphone-label": {
+    "format": "{source_volume}%"
+  },
+  "group/pulse-input-group": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "input-drawer-child",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "pulseaudio#microphone",
+      "pulseaudio#microphone-label"
+    ]
+  },
+  "pulseaudio#output": {
+    "format": "{icon}",
+    // "format-bluetooth": "{icon} {volume}%",
+    // "format-bluetooth-muted": "{icon} ",
+    "format-muted": "{icon}",
+    "format-icons": {
+      // "alsa_input.pci-0000_c1_00.6.analog-stereo": "",
+      // "alsa_input.pci-0000_c1_00.6.analog-stereo-muted": "󰛧",
+      // "bluez_output.F8_66_5A_33_64_EA.1": "󱡏",
+      // "bluez_output.F8_66_5A_33_64_EA.1-muted": "󱡐",
+      // "headphone": "󰋋",
+      // "headphone-muted": "󰟎",
+      // "hands-free": "󱡏",
+      // "headset": "",
+      // "hdmi": "󰡁",
+      // "speaker": "󰓃",
+      // "speaker-muted": "󰓄",
+      // "phone": "",
+      // "portable": "",
+      // "car": "",
+      "default": ["󰖀", "󰕾"],
+      "default-muted": "󰖁"
+    },
+    "reverse-scrolling": true,
+    "on-click": "swayosd-client --output-volume mute-toggle",
+    "on-click-right": "pavucontrol -t 3",
+    "on-scroll-up": "swayosd-client --output-volume 1",
+    "on-scroll-down": "swayosd-client --output-volume -1",
+    "tooltip-format": "{icon} {desc} - {volume}%"
+    //"scroll-step": 5
+  },
+  "group/pulse-output-group": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 300,
+      "children-class": "output-drawer-child",
+      "transition-left-to-right": false
+    },
+    "modules": [
+      "pulseaudio#output",
+      "pulseaudio/slider"
+    ]
+  },
+  "pulseaudio/slider": {
+    "min": 0,
+    "max": 100,
+    "orientation": "horizontal"
+  },
+  // "wireplumber": {
+  //   "format": "{icon} {volume}%",
+  //   "format-muted": "",
+  //   "icon-size": "24px",
+  //   "on-click": "swayosd-client --output-volume mute-toggle",
+  //   "on-click-right": "pavucontrol -t 3",
+  //   "on-scroll-up": "swayosd-client --output-volume 1",
+  //   "on-scroll-down": "swayosd-client --output-volume -1",
+  //   "format-icons": ["", "", "󰕾", ""]
+  // },
+  "custom/notification": {
+    "tooltip": true,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "dnd-inhibited-none": ""
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  }
+}
