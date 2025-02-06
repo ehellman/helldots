@@ -1,7 +1,10 @@
 
 # set environment variables
 source $HOME/.config/zsh/environment.zsh
+source $ZSH_CONFIG/path.zsh
 source $ZSH_CONFIG/aliases.zsh
+
+source $ZSH_CONFIG/load-plugins.zsh
 
 # linux-specific
 export GTK_THEME=Adwaita-dark
