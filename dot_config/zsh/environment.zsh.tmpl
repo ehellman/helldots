@@ -1,4 +1,4 @@
-# XDG Base Directory Specification
+### xdg dirs
 # http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
@@ -13,12 +13,13 @@ export XDG_RUNTIME_DIR="/tmp"
 #  "/tmp"
 #{{- end }}
 
+### shell
+export LANG="en_US.UTF-8"
+export EDITOR=nvim
+
 ### zsh
 export ZSH_CONFIG="$XDG_CONFIG_HOME/zsh"
 export ZSH_PLUGIN_DIR="$ZSH_CONFIG/plugins"
-
-# Make nvim default editor
-export EDITOR=nvim
 
 # ripgrep
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG/ripgrep/.ripgreprc"
