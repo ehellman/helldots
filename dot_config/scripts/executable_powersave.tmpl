@@ -71,9 +71,10 @@ if [ "$1" = "true" ]; then
   run_silent powerprofilesctl set power-saver
   
   logger "Adjusting Hyprland settings..."
-  [ "$hypr_blur_enabled" = "true" ] && run_silent hyprctl keyword decoration:blur:enabled false
-  [ "$hypr_shadow_enabled" = "true" ] && run_silent hyprctl keyword decoration:shadow:enabled false
-  
+  hyprctl --batch "\
+    $(if [[ "$hypr_blur_enabled" = "true" ]]; then echo "keyword decoration:blur:enabled false;"; fi)\
+    $(if [[ "$hypr_shadow_enabled" = "true" ]]; then echo "keyword decoration:shadow:enabled false;"; fi)"
+  exit
 elif [ "$1" = "false" ]; then
   logger "Switching to balanced mode..."
   
@@ -84,9 +85,10 @@ elif [ "$1" = "false" ]; then
   run_silent powerprofilesctl set balanced
   
   logger "Restoring Hyprland settings..."
-  [ "$hypr_blur_enabled" = "true" ] && run_silent hyprctl keyword decoration:blur:enabled true
-  [ "$hypr_shadow_enabled" = "true" ] && run_silent hyprctl keyword decoration:shadow:enabled true
-  
+  hyprctl --batch "\
+    $(if [[ "$hypr_blur_enabled" = "true" ]]; then echo "keyword decoration:blur:enabled true;"; fi)\
+    $(if [[ "$hypr_shadow_enabled" = "true" ]]; then echo "keyword decoration:shadow:enabled true;"; fi)"
+  exit
 else
   logger "Invalid argument. Use 'true' for power-saver mode or 'false' for balanced mode."
   exit 1
