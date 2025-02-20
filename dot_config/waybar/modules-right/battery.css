@@ -1,10 +1,8 @@
 #battery {
-  background-color: @base;
-  border-radius: 24px;
   color: @text;
 }
-.plugged {
-}
+
+.plugged {}
 
 .plugged.charging {
   color: @green;
@@ -12,7 +10,7 @@
 
 .critical:not(.charging) {
   background-color: @red;
-  color: @base;
+  color: @mantle;
   animation-name: blink;
   animation-duration: 0.5s;
   animation-timing-function: steps(12);

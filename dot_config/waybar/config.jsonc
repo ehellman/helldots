@@ -1,26 +1,36 @@
 {
   // Optional name added as a CSS class, for styling multiple waybars.
-  "name": "main",
+  "name": "bar",
   "layer": "top",
-  
   "position": "top",
+  "margin-top": 4,
+  "margin-left": 10,
+  "margin-right": 10,
   "gtk-layer-shell": true,
   "reload_style_on_change": true,
-  "modules-left": ["cpu", "hyprland/window"],
-  "modules-center": ["hyprland/workspaces"],
+  "modules-left": [
+    "hyprland/submap",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "hyprland/workspaces"
+  ],
   "modules-right": [
     "power-profiles-daemon",
-    "hyprland/submap",
     "hyprland/language",
     "backlight",
     "group/pulse-input-group",
     "group/pulse-output-group",
-    "temperature",
+    "group/cpu-group",
+    // "cpu",
+    // "custom/cpufan",
+    // "custom/cputemp",
+    // "temperature",
+    "custom/gputemp",
     "memory",
     "disk",
     "battery",
     "clock",
-    "group/menu",
     "tray",
     "custom/notification"
   ],
@@ -195,7 +205,28 @@
      */
     // Format string for brightness display. Default: {percent}%
     "format": "{icon} {percent}%",
-    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    // "format-icons": [
+    //   "󰝦",
+    //   "󰪞",
+    //   "󰪟",
+    //   "󰪠",
+    //   "󰪡",
+    //   "󰪢",
+    //   "󰪣",
+    //   "󰪤",
+    //   "󰪥"
+    // ],
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
     //
     // Polling interval in seconds
     "interval": 1,
@@ -219,11 +250,12 @@
     // Scrolling behavior
     "scroll-step": 1.0,
     "reverse-scrolling": true,
-    "smooth-scrolling-threshold": 0
-
+    "smooth-scrolling-threshold": 0,
     // Custom scroll commands (replaces default brightness control)
     // "on-scroll-up": "command",
     // "on-scroll-down": "command"
+    "on-scroll-up": "swayosd-client --brightness +2",
+    "on-scroll-down": "swayosd-client --brightness -1"
     //
     // Click handlers
     // "on-click": "command",
@@ -259,9 +291,35 @@
   },
   "cpu": {
     "interval": 5,
-    "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}",
+    // "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}",
     // "format": "{icon0}{icon1}{icon2}{icon3} {usage:>2}%",
-	  "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+    "format": "{icon}{usage:>2}%",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+    // "󰝦",
+    // "󰪞",
+    // "󰪟",
+    // "󰪠",
+    // "󰪡",
+    // "󰪢",
+    // "󰪣",
+    // "󰪤",
+    // "󰪥"
+    // "format-icons": [
+    //   "▁",
+    //   "▂",
+    //   "▃",
+    //   "▄",
+    //   "▅",
+    //   "▆",
+    //   "▇",
+    //   "█"
+    // ]
     // "max-length": 10
   },
   "temperature": {
@@ -275,11 +333,17 @@
       "critical": 15
     },
     "format": "{icon} {capacity}%",
-    "format-charging": "⚡ {capacity}%",
+    "format-charging": " {capacity}%",
     "format-plugged": " {capacity}%",
     "format-full": "",
     "format-alt": "{icon} {time}",
-    "format-icons": ["", "", "", "", ""]
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
   },
   "memory": {
     "interval": 10,
@@ -289,16 +353,20 @@
   },
   "disk": {
     "interval": 60,
-    "format": " {used}"
+    "format": " {specific_used:0.0f}GB",
+    "unit": "GB"
   },
   "power-profiles-daemon": {
     "format": "{icon}",
     "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
     "tooltip": true,
     "format-icons": {
-      "performance": "",
-      "balanced": "",
-      "power-saver": ""
+      "performance": "",
+      "balanced": "",
+      "power-saver": "",
+      // "performance": "",
+      // "balanced": " ",
+      // "power-saver": " "
     }
   },
   "clock": {
@@ -381,7 +449,10 @@
       // "phone": "",
       // "portable": "",
       // "car": "",
-      "default": ["󰖀", "󰕾"],
+      "default": [
+        "󰖀",
+        "󰕾"
+      ],
       "default-muted": "󰖁"
     },
     "reverse-scrolling": true,
@@ -438,5 +509,36 @@
     "on-click": "swaync-client -t -sw",
     "on-click-right": "swaync-client -d -sw",
     "escape": true
+  },
+  "group/cpu-group": {
+    "orientation": "inherit",
+    "modules": [
+      "cpu",
+      "custom/cpufan",
+      "custom/cputemp"
+      // "temperature",
+    ]
+  },
+  "custom/cputemp": {
+    "interval": 5,
+    "exec": "~/.config/waybar/scripts/fw13cpu_stats.sh", // Your jq command from above
+    "format": "{}°C",
+    "return-type": "json",
+    "tooltip": true
+  },
+  "custom/gputemp": {
+    "interval": 5,
+    "exec": "~/.config/waybar/scripts/amdgpu_stats.sh", // Your jq command from above
+    "format": " {}°C",
+    "return-type": "json",
+    "tooltip": true
+  },
+  "custom/cpufan": {
+    "interval": 5,
+    "exec": "~/.config/waybar/scripts/fw13_fanspeed.sh", // Your jq command from above
+    "format": "󰈐",
+    "return-type": "json",
+    "hide-empty-text": true,
+    "tooltip": false
   }
 }

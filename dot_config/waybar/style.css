@@ -6,31 +6,40 @@
 
 * {
   /* `otf-font-awesome` is required to be installed for icons */
-  font-family: "0xProto Nerd Font Mono";
-  font-size: 13px;
+  /* font-family: "0xProto Nerd Font Mono"; */
+  font-family: "JetBrainsMono Nerd Font, Font Awesome 6 Pro, Font Awesome 6 Sharp";
+  /* font-family: "0xProto Nerd Font Mono"; */
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+
 }
 
 tooltip {
   border-radius: 4px;
-  background-color: @base;
-  border: 2px solid @surface0;
+  background-color: @mantle;
+  /* border: 2px solid @surface0; */
   padding: 5px;
 }
 
 tooltip label {
   color: @text;
+  padding: 5px;
 }
 
 /* Overall Waybar styling */
 window#waybar {
-  min-height: 30px;
+  /* min-height: 20px; */
   background-color: transparent;
   transition-property: background-color;
   transition-duration: 0.5s;
   border-radius: 24px;
-  margin-left: 30px;
-  margin-right: 30px;
+  padding: 0;
+  margin: 0;
+  /* margin-left: 30px; */
+  /* margin-right: 30px; */
 }
+
 
 .modules-left {
   border-radius: 24px;
@@ -39,17 +48,17 @@ window#waybar {
 .modules-center {}
 
 .modules-right {
-  background-color: @base;
+  background-color: @mantle;
   /*padding: 2px;*/
-  border: 2px solid @surface0;
+  /* border: 2px solid @surface0; */
   border-radius: 24px;
 }
 
-#custom-separator {
-  font-size: 30px;
-  background-color: transparent;
-  color: @base;
-}
+/* #custom-separator { */
+/* 	font-size: 30px; */
+/* 	background-color: transparent; */
+/* 	color: @base; */
+/* } */
 
 button {
   /* Use box-shadow instead of border so the text isn't offset */
@@ -70,12 +79,17 @@ button:hover {
   /*box-shadow: inset 0 -3px #ffffff;*/
 }
 
+#submap,
+#language,
+#clock,
 #battery,
 #memory,
 #disk,
+#temperature,
 #backlight,
 #network,
-#pulseaudio,
+/* #pulse-input-group, */
+/* #pulse-output-group, */
 #wireplumber,
 #custom-notification,
 #custom-media,
@@ -85,10 +99,43 @@ button:hover {
 #scratchpad,
 #power-profiles-daemon,
 #custom-gputemp,
+#custom-cputemp,
+#custom-cpufan,
 #mpd {
-  padding: 0 8px;
+  background-color: @mantle;
+  border-radius: 20px;
+  /* padding: 0 8px; */
+  padding: 0 6px;
+  transition: color 0.3s ease;
+  color: @subtext0;
+}
+
+#submap:hover,
+#language:hover,
+#clock:hover,
+#battery:hover,
+#memory:hover,
+#disk:hover,
+#cpu:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#pulseaudio:hover,
+#wireplumber:hover,
+#custom-notification:hover,
+#custom-media:hover,
+#tray:hover,
+#mode:hover,
+#idle_inhibitor:hover,
+#scratchpad:hover,
+#power-profiles-daemon:hover,
+#custom-gputemp:hover,
+#custom-cputemp:hover,
+#custom-cpufan:hover,
+#mpd:hover {
   color: @text;
 }
+
 
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left>widget:first-child>#workspaces {
@@ -100,16 +147,13 @@ button:hover {
   margin-right: 0;
 }
 
-@keyframes blink {
-  to {
-    background-color: #ffffff;
-    color: #000000;
-  }
-}
-
 #power-profiles-daemon {
-  border-radius: 50%;
-  font-size: 24px;
+  border-radius: 24px;
+  min-width: 20px;
+  font-size: 20px;
+  margin: 0;
+  padding: 0 8px;
+  /* font-size: 24px; */
 }
 
 #power-profiles-daemon:hover {
@@ -129,7 +173,7 @@ button:hover {
 }
 
 #custom-notification {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 label:focus {
@@ -140,29 +184,81 @@ label:focus {
   background-image: url('/home/erik/.config/waybar/void.svg');
   background-position: center;
   background-repeat: no-repeat;
-  background-size: contain; 
+  background-size: contain;
 }
 
+#cpu-group {
+  border-radius: 24px;
+  /* background-color: @base; */
+  padding: 0;
+}
+
+#cpu-group>*>* {
+  margin-right: 4px;
+}
+
+#cpu-group>*:last-child>* {
+  margin-right: 0;
+}
+
+/* #cpu-group>widget .module { */
+/* 	margin-right: 4px; */
+/* 	border-radius: 24px; */
+/* } */
+/**/
+/* #cpu-group>widget:last-child .module { */
+/* 	margin-right: 0; */
+/* } */
+
+/* cpu widget:last-child { */
+/* 	margin-right: 0; */
+/* 	color: @green; */
+/* } */
+
+
+
 #cpu {
-  background-color: transparent;
-  font-size: 10px;
+  /* font-size: 10px; */
   /*border-radius: 0 24px 24px 0;*/
-  color: @text;
-  padding: 0 4px 0 8px;
+  /* color: @text; */
+  color: @sky;
+  /* padding: 0 4px 0 8px; */
+  /* padding: 0 4px 0 4px; */
   /* margin-bottom: -16px; */
   /* margin-left: -120px; */
 }
 
+#custom-cputemp {
+  color: @sky;
+  -gtk-icon-transform: skew(14deg);
+}
+
+#custom-cpufan {
+  color: @sky;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+.critical:not(.charging) {
+  background-color: @red;
+  color: @mantle;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-timing-function: steps(12);
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
 #memory {
-  background-color: @surface0;
+  /* background-color: @surface0; */
 }
 
 #disk {
-  background-color: @base;
+  /* background-color: @base; */
 }
 
 #backlight {
-  background-color: @base;
+  /* background-color: @base; */
 }
 
 #network {
@@ -179,7 +275,7 @@ label:focus {
   color: @subtext0;
   transition: color 0.3s;
   font-size: 12px;
-  margin: 0 4px;
+  /* margin: 0 4px; */
 }
 
 #language:hover {
@@ -190,41 +286,62 @@ label:focus {
 
 #pulseaudio,
 #wireplumber {
-  background-color: @base;
+  /* background-color: @base; */
   /* border-radius: 24px; */
+  /* color: @text; */
+}
+
+#pulse-input-group,
+#pulse-output-group {
+  transition: color 0.3s ease;
+  color: @subtext0;
+}
+
+#pulse-input-group:hover,
+#pulse-output-group:hover {
   color: @text;
 }
+
 
 #pulse-input-group:hover #pulseaudio.microphone-label,
 #pulse-input-group:hover #pulseaudio.microphone {
   background-color: @surface0;
   transition: background-color 0.3s;
 }
+
 #pulseaudio.microphone-label {
   padding-left: 6px;
-  padding-right: 0;
+  padding-right: 4px;
 }
+
 #pulseaudio.microphone-label.source-muted {
   color: @overlay2;
 }
+
 #pulseaudio.microphone {
   font-size: 16px;
+  padding: 0 6px;
 }
+
 #pulseaudio.microphone:hover {
   /* background-color: @surface0; */
 }
+
 #pulseaudio.microphone.source-muted {
   color: @red;
   font-size: 20px;
 }
 
-/* #pulse-output-group:hover #pulseaudio.output,
-#pulse-output-group:hover #pulseaudio-slider {
-  background-color: @surface0;
-} */
+#pulse-output-group {
+  padding-right: 6px;
+}
+
 #pulseaudio.output {
   font-size: 16px;
+  padding: 0 6px;
+  /* padding: 0 4px 0 0; */
 }
+
 #pulseaudio.output.muted {
   color: @red;
   font-size: 20px;
@@ -232,41 +349,45 @@ label:focus {
 
 #wireplumber.muted {
   background-color: @red;
-  color: @base;
+  color: @mantle;
 }
 
 /* ------------------------------------------------ */
 slider {
-	min-height: 0px;
-	min-width: 0px;
-	margin-left: 0px;
-	padding-right: 0px;
-	opacity: 0;
-	background-image: none;
-	border: none;
-	box-shadow: none;
+  min-height: 0px;
+  min-width: 0px;
+  margin-left: 0px;
+  padding-right: 0px;
+  opacity: 0;
+  background-image: none;
+  border: none;
+  box-shadow: none;
 }
 
 trough {
-	min-height: 10px;
-	min-width: 80px;
-	border-radius: 5px;
+  min-height: 10px;
+  min-width: 80px;
+  border-radius: 5px;
+  border: none;
+
 }
 
 highlight {
-	min-height: 10px;
-	border-radius: 5px 0 0 5px;
+  min-height: 10px;
+  border-radius: 5px 0 0 5px;
+  border: none;
 }
 
 #pulseaudio-slider {
-  padding-left: 6px;
+  padding-left: 0px;
   padding-right: 0;
-  background-color: @base;
+  background-color: @mantle;
 }
 
 #pulseaudio-slider slider {
   background-color: @text;
 }
+
 #pulseaudio-slider.muted slider {
   background-color: @red;
 }
@@ -296,20 +417,20 @@ highlight {
 }
 
 #temperature {
-  background-color: @surface0;
+  /* background-color: @surface0; */
   /*border-radius: 24px 0 0 24px;*/
   color: @text;
-  padding: 0 8px 0 4px;
+  /* padding: 0 4px 0 4px; */
 }
 
 #temperature.critical {
-  background-color: @background;
+  background-color: @mantle;
   color: @red;
 }
 
-#tray {
-  background-color: @background;
-}
+/* #tray { */
+/* 	background-color: @background; */
+/* } */
 
 #tray>.passive {
   -gtk-icon-effect: dim;

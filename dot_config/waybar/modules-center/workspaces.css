@@ -1,6 +1,7 @@
 /* Workspaces module styling */
 #workspaces {
-  background-color: @base;
+  background-color: @mantle;
+  padding: 6px;
   /* margin: 0px 5px; */
   border-radius: 24px;
 }
@@ -8,8 +9,9 @@
 #workspaces button {
   background-color: transparent;
   transition-property: all;
+  padding: 0px 7px;
   color: @text;
-  border: 2px solid @base;
+  /* border: 2px solid @base; */
   border-radius: 24px;
 }
 
@@ -18,16 +20,17 @@
   padding: 0px 15px;
   color: @text;
   background-color: @surface1;
+  /* border-color: @surface1; */
 }
 
 #workspaces button.active {
   /*background-color: @surface2;*/
-  background-color: @base;
-  border: 2px solid @lavender;
-  /*color: @base;*/
+  background-color: @lavender;
+  /* border: 2px solid @lavender; */
+  color: @base;
   transition-duration: 100ms;
   border-radius: 24px;
-  padding: 0px 15px;
+  padding: 0px 14px;
   transition-property: all;
 }
 
@@ -37,4 +40,14 @@
 
 #workspaces button.urgent {
   background-color: @red;
+  color: @base;
+}
+
+#workspaces button.special {
+  margin-left: 4px;
+}
+
+#workspaces button.special.active {
+  background-color: @sky;
+  color: @mantle;
 }

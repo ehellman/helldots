@@ -1,8 +1,7 @@
 @import url("../colors.css");
 
 #clock {
-  background-color: @base;
-  border-radius: 24px;
-  padding: 0px 8px;
+  /* border-radius: 24px; */
+  /* padding: 0px 8px; */
   color: @text;
 }

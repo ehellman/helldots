@@ -3,12 +3,14 @@
   transition-duration: 100ms;
   transition-property: all;
   color: @text;
-  padding: 0px 5px 0px 10px;
-  background-color: @base;
-  border-top: 2px solid @surface0;
-  border-left: 2px solid @surface0;
-  border-bottom: 2px solid @surface0;
-  border-radius: 24px 0px 0px 24px;
+  padding: 5px;
+  /* padding: 0px 5px 0px 10px; */
+  background-color: @mantle;
+  /* border-top: 2px solid @surface0; */
+  /* border-left: 2px solid @surface0; */
+  /* border-bottom: 2px solid @surface0; */
+  border-radius: 24px;
+  /* border-radius: 24px 0px 0px 24px; */
 }
 
 
