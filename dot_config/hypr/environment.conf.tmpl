@@ -14,3 +14,13 @@ env = GDK_SCALE,2
 env = QT_AUTO_SCREEN_SCALE_FACTOR,1
 env = QT_QPA_PLATFORM,wayland;xcb
 # env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
+
+ 
+{{- if eq .host.distro.de "wayland" }}
+# enable wayland env variables for firefox
+env = MOZ_DBUS_REMOTE,1
+env = MOZ_ENABLE_WAYLAND,1
+# enable wayland-mode for multiple apps (1password etc)
+env = ELECTRON_ENABLE_WAYLAND,1
+{{- end }}
+
