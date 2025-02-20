@@ -32,18 +32,65 @@
 {{-   $chassisType = (output "powershell.exe" "-noprofile" "-command" "if (Get-WmiObject -Class win32_battery -ComputerName localhost) { echo laptop } else { echo desktop }") }}
 {{- end }}
 
+{{- $desktopEnv:= "" }}
+{{- if eq .host.distro.family "linux" }}
+  {{- if env "WAYLAND_DISPLAY" }}
+    {{- $desktopEnv = "wayland" }}
+  {{- else if env "DISPLAY" }}
+    {{- $desktopEnv = "x11" }}
+  {{- end }}
+{{- else if eq .host.distro.family "darwin" }}
+  {{- $desktopEnv = "aqua" }}
+{{- else if eq .host.distro.family "windows" }}
+  {{- $desktopEnv = "explorer" }}
+{{- end }}
+
+{{- if $ephemeral -}}
+{{-   $chassisType = "ephemeral" }}
+{{- else if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{-     $chassisType = "wsl" }}
+{{-   else -}}
+{{-     $chassisType = (output "hostnamectl" "chassis") }}
+{{-   end -}}
+{{- else if eq .chezmoi.os "darwin" }}
+{{-   if contains "MacBook" (output "sysctl" "-n" "hw.model") }}
+{{-     $chassisType = "laptop" }}
+{{-   else }}
+{{-     $chassisType = "desktop" }}
+{{-   end }}
+{{- else if eq .chezmoi.os "windows" }}
+{{-   $chassisType = (output "powershell.exe" "-noprofile" "-command" "if (Get-WmiObject -Class win32_battery -ComputerName localhost) { echo laptop } else { echo desktop }") }}
+{{- end }}
+
+
 {{- $hostname := .chezmoi.hostname }}
+
+{{/* TODO: Add Windows and MacOS */}}
+{{- $zsh_config:= "" }}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   $zsh_config = (joinPath .chezmoi.homeDir "/.config/zsh") }}
+{{- end -}}
 
 data:
   host:
     arch: "{{ .chezmoi.arch }}"
     distro:
       family: "{{ .chezmoi.os }}"
-      id: "{{ get .chezmoi.osRelease "id" | default .chezmoi.os }}"
+      release: "{{ get .chezmoi.osRelease "id" | default .chezmoi.os }}"
+      de: "{{ $desktopEnv }}"
     homeParentFolder: "{{ if eq .chezmoi.os "linux" }}/home{{ else if eq .chezmoi.os "darwin" }}/Users{{ else }}C:\Users{{ end }}"
     headless: "{{ $headless }}"
     hostname: "{{ $hostname | lower | trim -}}"
     type: "{{ $chassisType | lower | trim -}}"
-  domains:
+  domain:
     home: "hellhe.im"
     personal: "erikhellman.com"
+  path:
+    zshConfig: "{{ $zsh_config }}"
+    xdg:
+      config: "{{ .chezmoi.homeDir }}/.config"
+      cache: "{{ .chezmoi.homeDir }}/.cache"
+      data: "{{ .chezmoi.homeDir }}/.local/share"
+      state: "{{ .chezmoi.homeDir }}/.local/state"
+      bin: "{{ .chezmoi.homeDir }}/bin"

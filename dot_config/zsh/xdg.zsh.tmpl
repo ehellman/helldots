@@ -1,0 +1,18 @@
+### xdg dirs
+# http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+export XDG_CONFIG_HOME="{{ .path.xdg.config }}"
+export XDG_CACHE_HOME="{{ .path.xdg.cache }}"
+export XDG_DATA_HOME="{{ .path.xdg.data }}"
+export XDG_STATE_HOME="{{ .path.xdg.state }}"
+export XDG_RUNTIME_DIR=
+{{- if eq .host.distro.family "darwin" }}
+  "/tmp"
+{{- else if eq .host.distro.family "windows" -}}
+  # TODO: Figure out if $TMPDIR works on Windows
+  "$TMPDIR"
+{{- else if eq .host.headless "true" -}}
+  # TODO: Figure out if /tmp works for headless
+  "/tmp"
+{{- else -}}
+  "/run/user/$(id -u)"
+{{- end }}

@@ -1,0 +1,4 @@
+# [".config/nvim-hellman"]
+# 	type = "git-repo"
+# 	url = "git@github.com:ehellman/hellman.nvim.git"
+# 	branch = "master"

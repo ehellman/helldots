@@ -1,5 +1,7 @@
 
 # set environment variables
+# source $HOME/.config/zsh/xdg.zsh
+source "{{ .path.zshConfig }}/xdg.zsh"
 source $HOME/.config/zsh/environment.zsh
 source $ZSH_CONFIG/path.zsh
 source $ZSH_CONFIG/aliases.zsh
@@ -10,11 +12,62 @@ source $ZSH_CONFIG/load-plugins.zsh
 export GTK_THEME=Adwaita-dark
 export QT_STYLE_OVERRIDE=Adwaita-Dark
 
-zstyle ':completion:*' completer _complete _ignored
-zstyle :compinstall filename '/home/erik/.zshrc'
-
+# zstyle ':completion:*' completer _complete _ignored
+# zstyle :compinstall filename '/home/erik/.zshrc'
+#
+#
+#
+#
+#
+#
 # cache the generation of completions
 source $ZSH_CONFIG/compinit.zsh
+
+#
+#
+#
+#
+#
+#
+#
+
+
+
+# completion types
+zstyle ':completion:*' completer _extensions _complete
+
+# jump directly to first completion
+zstyle ':completion:::::default' menu yes select
+
+# matching
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[.+-]=* r:|=*' 'l:|=* r:|=*'
+
+# allow highlight/menu move in completions
+zstyle ':completion:*' menu select
+
+# styles
+zstyle ':completion:*:*:*:*:descriptions' format '%F{green}// %d%f'
+zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}// %d%f'
+zstyle ':completion:*:messages' format '%F{purple}// %d%f'
+zstyle ':completion:*:warnings' format '%F{red}// no completions availible%f'
+
+# group results under headers
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:*:-command-:*:*' group-order alias builtins functions commands
+
+# file colors
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+# use --help completions when availible
+compdef _gnu_generic -default- -P '*'
+#
+#
+#
+#
+#
+#
+#
+# 
 
 HISTSIZE=9999999 # Lines of history to keep in memory for current session
 HISTFILESIZE=9999999 # Number of commands to save in the file
@@ -34,6 +87,26 @@ unsetopt flow_control
 
 # vim mode
 bindkey -v
+
+### clipboard (zsh-system-clipboard)
+# xcc - xclip
+# pb - pbcopy/pbpaste
+# wlc - wl-copy/wl-paste
+{{- $zsh_system_clipboard_method := "" }}
+
+{{- if eq .host.distro.family "linux" }}
+  {{- if env "WAYLAND_DISPLAY" }}
+    {{- $zsh_system_clipboard_method = "wlc" }}
+  {{- else if env "DISPLAY" }}
+    {{- $zsh_system_clipboard_method = "xcc" }}
+  {{- end }}
+{{- else if eq .host.distro.family "darwin" }}
+  {{- $zsh_system_clipboard_method = "pb" }}
+{{- end }}
+
+{{- if $zsh_system_clipboard_method }}
+export ZSH_SYSTEM_CLIPBOARD_METHOD={{ $zsh_system_clipboard_method }}
+{{- end }}
 
 source $ZSH_CONFIG/fzf.zsh
 
