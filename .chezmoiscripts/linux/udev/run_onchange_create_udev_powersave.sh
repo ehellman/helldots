@@ -17,22 +17,94 @@
 # E: POWER_SUPPLY_TYPE=Mains
 # E: POWER_SUPPLY_ONLINE=1 <--- this is the correct value
 # sudo udevadm test /devices/pci0000:00/0000:00:14.3/ACPI0003:00/power_supply/ACAD
-echo "[chezmoi] Creating powersave udev rule"
-echo "Config: $XDG_CONFIG_HOME"
-echo
 
+logger() {
+  local message="[chezmoiscript:$0] $1"
+  
+  echo "$message"
+}
+
+logger "creating powersave udev rule"
+
+ensure_permissions() {
+  local file="$1"
+  local desired_permissions="$2"
+
+  # get numeric file/folder permissions
+  permissions=$(stat -c "%a" "$file")
+
+  # check if permissions match the expected permissions
+  if [ "$permissions" -ne "$desired_permissions" ]; then
+    logger "$file does not have $desired_permissions permissions."
+    sudo chmod "$desired_permissions" "$file"
+    logger "adjusted permissions for $file to $desired_permissions"
+  else
+    logger "$file already has the correct permissions ($desired_permissions)."
+  fi
+}
+
+udev_rule_file="/etc/udev/rules.d/99-powersave.rules"
 supply_state_wrapper="ATTR" # seen: ATTR | ENV
 power_supply_state_attr="online" # seen: online | POWER_SAVE_ONLINE
+made_changes=false
 
-# create the udev rule file using $HOME
-echo "SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"0\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave true\"" | sudo tee /etc/udev/rules.d/99-powersave.rules > /dev/null
-echo "SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"1\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave false\"" | sudo tee -a /etc/udev/rules.d/99-powersave.rules > /dev/null
+create_or_overwrite_entire_file() {
+  made_changes=true
+  local file="$1"
+  local content="$2"
+  logger "$file does not exist, creating and populating"
+  echo -e "$content" | sudo tee "$file" > /dev/null
+}
 
-# set the correct permissions
-sudo chmod 0644 /etc/udev/rules.d/99-powersave.rules
+disconnected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"0\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave true\"" 
+connected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"1\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave false\"" 
 
-# reload udev rules
-sudo udevadm control --reload
+if [ ! -f "$udev_rule_file" ]; then
+  logger "$udev_rule_file does not exist, creating and populating"
+  create_or_overwrite_entire_file "$udev_rule_file" "$disconnected_state\n$connected_state"
+
+  # ensure correct permissions
+  ensure_permissions "$udev_rule_file" 0644
+else
+  logger "$udev_rule_file already exists"
+
+  # ensure correct permissions
+  ensure_permissions "$udev_rule_file" 0644
+  line_count=$(wc -l < "$udev_rule_file")
+  if [ "$line_count" -ne 2 ]; then
+    logger "$udev_rule_file does not have 2 lines, overwriting"
+    create_or_overwrite_entire_file "$udev_rule_file" "$disconnected_state\n$connected_state"
+  else
+    line1=$(sed -n '1p' "$udev_rule_file")
+    line2=$(sed -n '2p' "$udev_rule_file")
+
+    logger "checking line 1: disconnected state"
+    if [ "$line1" != "$disconnected_state" ]; then
+      logger "line 1 is incorrect, overwriting"
+      logger "> existing: $line1"
+      logger "> updated: $disconnected_state"
+      sudo sed -i "1s/.*/$disconnected_state/" "$udev_rule_file"
+      made_changes=true
+    fi
+
+    logger "checking line 2: connected state"
+    if [ "$line2" != "$connected_state" ]; then
+      logger "line 2 is incorrect, overwriting"
+      logger "> existing: $line2"
+      logger "> updated: $connected_state"
+      sudo sed -i "2s/.*/$connected_state/" "$udev_rule_file"
+      made_changes=true
+    fi
+  fi
+fi
+
+
+if [ "$made_changes" == true ]; then
+  logger "file was updated, reloading udev rules"
+  sudo udevadm control --reload
+else
+  logger "udev rule file was already correct"
+fi
 
 # reset sudo timeout
 sudo -k
