@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-{{ if eq .host.distro.id "arch" -}}
+{{ if eq .host.distro.release "arch" -}}
 {{ range .packages.pacman -}}
 sudo pacman -Sy {{ . | quote }}
 {{ end -}}
