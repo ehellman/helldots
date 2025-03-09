@@ -109,12 +109,16 @@ export ZSH_SYSTEM_CLIPBOARD_METHOD={{ $zsh_system_clipboard_method }}
 {{- end }}
 
 source $ZSH_CONFIG/fzf.zsh
+source $ZSH_CONFIG/extensions/fzf-git.sh
 
 # 1password - use SSH agent
 export SSH_AUTH_SOCK=$HOME/.1password/agent.sock
 
 # 1password - load plugins
 source $XDG_CONFIG_HOME/op/plugins.sh
+
+# 1password-cli - load completions
+eval "$(op completion zsh)"; compdef _op op
 
 # reload waybar
 alias rlwb="pkill waybar && hyprctl dispatch exec waybar"

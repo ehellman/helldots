@@ -1,0 +1,18 @@
+---
+pacman:
+  - base-devel
+  - curl
+  - ffmpeg
+  - git
+  - git-delta
+aur:
+{{- if eq .host.features.passwordManager "true" }}
+{{- if eq .host.headless "false" }}
+  - 1password
+{{- end }}
+  - 1password-cli
+{{- end }}
+  - git
+  - google-chrome
+  - google-chrome-canary
+  - wl-screenrec

@@ -64,14 +64,6 @@
 {{- end }}
 
 
-{{- $passwordManager := false -}}
-{{- if $ephemeral -}}
-    {{- $passwordManager = false }}
-{{- else if eq .chezmoi.os "linux" -}}
-    {{- $passwordManager = true }}
-{{- end }}
-
-
 {{- $hostname := .chezmoi.hostname }}
 
 {{/* TODO: Add Windows and MacOS */}}
@@ -80,27 +72,30 @@
 {{-   $zsh_config = (joinPath .chezmoi.homeDir "/.config/zsh") }}
 {{- end -}}
 
-data:
-  host:
-    arch: "{{ .chezmoi.arch }}"
-    distro:
-      family: "{{ .chezmoi.os }}"
-      id: "{{ get .chezmoi.osRelease "id" | default .chezmoi.os }}"
-      de: "{{ $desktopEnv }}"
-    homeParentFolder: "{{ if eq .chezmoi.os "linux" }}/home{{ else if eq .chezmoi.os "darwin" }}/Users{{ else }}C:\Users{{ end }}"
-    headless: "{{ $headless }}"
-    hostname: "{{ $hostname | lower | trim -}}"
-    type: "{{ $chassisType | lower | trim -}}"
-  features:
-    passwordManager: "{{ $passwordManager }}"
-  domain:
-    home: "hellhe.im"
-    personal: "erikhellman.com"
-  path:
-    zshConfig: "{{ $zsh_config }}"
-    xdg:
-      config: "{{ .chezmoi.homeDir }}/.config"
-      cache: "{{ .chezmoi.homeDir }}/.cache"
-      data: "{{ .chezmoi.homeDir }}/.local/share"
-      state: "{{ .chezmoi.homeDir }}/.local/state"
-      bin: "{{ .chezmoi.homeDir }}/bin"
+[data]
+
+[data.host]
+arch = {{ .chezmoi.arch | quote }}
+homeParentFolder = "{{ if eq .chezmoi.os "linux" }}/home{{ else if eq .chezmoi.os "darwin" }}/Users{{ else }}C:\Users{{ end }}"
+headless = {{ $headless | quote }}
+hostname = "{{ $hostname | lower | trim -}}"
+type = "{{ $chassisType | lower | trim -}}"
+
+[data.host.distro]
+family = {{ .chezmoi.os | quote }}
+release = {{ get .chezmoi.osRelease "id" | default .chezmoi.os | quote }}
+de = {{ $desktopEnv | quote }}
+
+[data.domain]
+home = "hellhe.im"
+personal = "erikhellman.com"
+
+[data.path]
+zshConfig = {{ $zsh_config | quote }}
+
+[data.path.xdg]
+config = "{{ .chezmoi.homeDir }}/.config"
+cache = "{{ .chezmoi.homeDir }}/.cache"
+data = "{{ .chezmoi.homeDir }}/.local/share"
+state = "{{ .chezmoi.homeDir }}/.local/state"
+bin = "{{ .chezmoi.homeDir }}/bin"

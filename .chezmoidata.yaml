@@ -1,6 +1,0 @@
-packages:
-  pacman:
-    - 'bat'
-    - 'ripgrep'
-    - 'fzf'
-    - 'jq'
