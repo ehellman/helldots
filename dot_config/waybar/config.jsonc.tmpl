@@ -8,25 +8,23 @@
   "margin-right": 10,
   "gtk-layer-shell": true,
   "reload_style_on_change": true,
-  "modules-left": [
-    "hyprland/submap",
-    "hyprland/window"
-  ],
-  "modules-center": [
-    "hyprland/workspaces"
-  ],
+  "modules-left": ["hyprland/submap", "hyprland/window"],
+  "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "power-profiles-daemon",
     "hyprland/language",
     "backlight",
     "group/pulse-input-group",
     "group/pulse-output-group",
-    "group/cpu-group",
-    // "cpu",
     // "custom/cpufan",
     // "custom/cputemp",
-    // "temperature",
+{{ if eq .chezmoi.hostname "draupnir" }}
+    "group/cpu-group",
     "custom/gputemp",
+{{ else }}
+    "cpu",
+    "temperature",
+{{ end }}
     "memory",
     "disk",
     "battery",
@@ -216,17 +214,7 @@
     //   "󰪤",
     //   "󰪥"
     // ],
-    "format-icons": [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
     //
     // Polling interval in seconds
     "interval": 1,
@@ -294,13 +282,7 @@
     // "format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}",
     // "format": "{icon0}{icon1}{icon2}{icon3} {usage:>2}%",
     "format": "{icon}{usage:>2}%",
-    "format-icons": [
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
+    "format-icons": ["", "", "", "", ""]
     // "󰝦",
     // "󰪞",
     // "󰪟",
@@ -337,13 +319,7 @@
     "format-plugged": " {capacity}%",
     "format-full": "",
     "format-alt": "{icon} {time}",
-    "format-icons": [
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
+    "format-icons": ["", "", "", "", ""]
   },
   "memory": {
     "interval": 10,
@@ -363,7 +339,7 @@
     "format-icons": {
       "performance": "",
       "balanced": "",
-      "power-saver": "",
+      "power-saver": ""
       // "performance": "",
       // "balanced": " ",
       // "power-saver": " "
@@ -424,10 +400,7 @@
       "children-class": "input-drawer-child",
       "transition-left-to-right": false
     },
-    "modules": [
-      "pulseaudio#microphone",
-      "pulseaudio#microphone-label"
-    ]
+    "modules": ["pulseaudio#microphone", "pulseaudio#microphone-label"]
   },
   "pulseaudio#output": {
     "format": "{icon}",
@@ -449,10 +422,7 @@
       // "phone": "",
       // "portable": "",
       // "car": "",
-      "default": [
-        "󰖀",
-        "󰕾"
-      ],
+      "default": ["󰖀", "󰕾"],
       "default-muted": "󰖁"
     },
     "reverse-scrolling": true,
@@ -470,10 +440,7 @@
       "children-class": "output-drawer-child",
       "transition-left-to-right": false
     },
-    "modules": [
-      "pulseaudio#output",
-      "pulseaudio/slider"
-    ]
+    "modules": ["pulseaudio#output", "pulseaudio/slider"]
   },
   "pulseaudio/slider": {
     "min": 0,
@@ -510,11 +477,12 @@
     "on-click-right": "swaync-client -d -sw",
     "escape": true
   },
+  {{ if eq .chezmoi.hostname "draupnir" }}
   "group/cpu-group": {
     "orientation": "inherit",
     "modules": [
       "cpu",
-      "custom/cpufan",
+      // "custom/cpufan",
       "custom/cputemp"
       // "temperature",
     ]
@@ -541,4 +509,5 @@
     "hide-empty-text": true,
     "tooltip": false
   }
+  {{ end }}
 }

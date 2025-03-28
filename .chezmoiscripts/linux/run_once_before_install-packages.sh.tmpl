@@ -5,10 +5,7 @@
 
   {{ $pkg := ( includeTemplate ( print .host.distro.id "/packages.yaml.tmpl" ) . | fromYaml ) }}
   sudo pacman -S --needed {{ $pkg.pacman | join " " }}
-
-  {{ $aurPkg := ( includeTemplate ( print .host.distro.id "/packages/aur" ) . | fromYaml ) }}
-  {{- "paru -S --needed " -}}{{ $aurPkg }}
-
+  paru -S --needed {{ $pkg.aur | join " " }}
 {{- end }}
 
 {{- end }}

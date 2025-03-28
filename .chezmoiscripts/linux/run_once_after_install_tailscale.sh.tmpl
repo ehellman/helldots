@@ -1,0 +1,41 @@
+{{ if eq .chezmoi.os "linux" -}}
+
+{{ if eq .host.distro.id "arch" -}}
+
+#!/bin/bash
+
+# exit on error
+set -e
+
+if [ -x "$(command -v tailscale)" ]; then
+  cd ~
+
+  # enable daemon
+  #
+  echo "Checking if tailscaled service is running"
+  if ! systemctl is-active --quiet tailscaled; then
+    echo "Enabling and starting tailscaled service"
+    sudo systemctl enable --now tailscaled
+  else
+    echo "Tailscaled service is already running"
+    # TODO: Check if versions mismatch
+    # VERSION_MISMATCH=$(tailscale version 2)
+    # if [ "$VERSION_MISMATCH" -gt 0 ]; then
+    #   echo "Tailscale client and server versions don't match, restarting service"
+    #   sudo systemctl restart tailscaled
+    # else
+    #   echo "Tailscale service is running with matching versions"
+    # fi
+  fi
+  TAILSCALE_STATUS=$(tailscale status)
+  if echo "$TAILSCALE_STATUS" | grep -q "Logged out"; then
+    echo "Logging in to Tailscale"
+    sudo tailscale login
+  else
+    echo "Already logged in to Tailscale"
+  fi
+fi
+
+{{ end -}}
+
+{{ end -}}

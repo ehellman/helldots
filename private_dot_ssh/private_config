@@ -1,0 +1,24 @@
+
+Host *
+	# use 1password ssh agent
+	IdentityAgent ~/.1password/agent.sock
+	#
+	# always use ssh2
+	Protocol 2
+	#
+	# Enable compression for slow connections
+	Compression yes
+	#
+	# Use a shared channel for all sessions to the same host,
+	# instead of always opening a new one. This leads to much
+	# quicker connection times.
+	ControlMaster auto 
+	ControlPath ~/.ssh/control/%r@%h:%p
+	ControlPersist 1800
+	#
+	# hashes the entries in your ~/.ssh/known_hosts file
+	HashKnownHosts yes	
+	# Sends a keep-alive message to the server every 300 seconds (5 minutes)
+	ServerAliveInterval 300
+	# Disconnect after X failed keep-alive responses
+	ServerAliveCountMax 2

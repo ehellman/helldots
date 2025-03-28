@@ -19,9 +19,11 @@
 # E: POWER_SUPPLY_ONLINE=1 <--- this is the correct value
 # sudo udevadm test /devices/pci0000:00/0000:00:14.3/ACPI0003:00/power_supply/ACAD
 
+{{ if eq .host.type "laptop" }}
+
 logger() {
   local message="[chezmoiscript:$0] $1"
-  
+
   echo "$message"
 }
 
@@ -45,7 +47,7 @@ ensure_permissions() {
 }
 
 udev_rule_file="/etc/udev/rules.d/99-powersave.rules"
-supply_state_wrapper="ATTR" # seen: ATTR | ENV
+supply_state_wrapper="ATTR"      # seen: ATTR | ENV
 power_supply_state_attr="online" # seen: online | POWER_SAVE_ONLINE
 made_changes=false
 
@@ -54,11 +56,11 @@ create_or_overwrite_entire_file() {
   local file="$1"
   local content="$2"
   logger "$file does not exist, creating and populating"
-  echo -e "$content" | sudo tee "$file" > /dev/null
+  echo -e "$content" | sudo tee "$file" >/dev/null
 }
 
-disconnected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"0\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave true\"" 
-connected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"1\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave false\"" 
+disconnected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"0\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave true\""
+connected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"1\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave false\""
 
 if [ ! -f "$udev_rule_file" ]; then
   logger "$udev_rule_file does not exist, creating and populating"
@@ -71,7 +73,7 @@ else
 
   # ensure correct permissions
   ensure_permissions "$udev_rule_file" 0644
-  line_count=$(wc -l < "$udev_rule_file")
+  line_count=$(wc -l <"$udev_rule_file")
   if [ "$line_count" -ne 2 ]; then
     logger "$udev_rule_file does not have 2 lines, overwriting"
     create_or_overwrite_entire_file "$udev_rule_file" "$disconnected_state\n$connected_state"
@@ -99,7 +101,6 @@ else
   fi
 fi
 
-
 if [ "$made_changes" == true ]; then
   logger "file was updated, reloading udev rules"
   sudo udevadm control --reload
@@ -110,3 +111,4 @@ fi
 # reset sudo timeout
 sudo -k
 
+{{ end }}

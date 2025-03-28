@@ -1,0 +1,5 @@
+{{ if eq .chezmoi.hostname "draupnir" }}
+  {{- template "arch/hypr/draupnir/monitors.conf" . }}
+{{ else if eq .chezmoi.hostname "revnarch" }}
+  {{- template "arch/hypr/revnarch/monitors.conf" . }}
+{{ end }}

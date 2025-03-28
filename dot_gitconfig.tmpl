@@ -1,0 +1,39 @@
+[color]
+	ui = auto
+[alias]
+	l = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate --date=short --color --decorate
+[core]
+	editor = nvim
+	pager = delta
+[user]
+	name = Erik Hellman
+	email = iam@erikhellman.com
+  signingkey = {{ ( onepasswordDetailsFields "nmdmjhcc4gxkjw3ehyskqf5uaq" ).public_key.value }}
+[hub]
+	protocol = ssh
+[pull]
+	rebase = true 
+[push]
+	default = upstream
+  autoSetupRemote = true
+[commit]
+	gpgsign = true
+[merge]
+	conflictstyle = diff3
+[difftool]
+	prompt = true
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true # use n and N to navigate
+	side-by-side = true
+	line-numbers = true
+	features = catppuccin-mocha
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /opt/1Password/op-ssh-sign 
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "git@bitbucket.org:"]
+	insteadOf = https://bitbucket.org/

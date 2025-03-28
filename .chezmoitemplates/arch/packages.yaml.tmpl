@@ -1,18 +1,57 @@
 ---
 pacman:
   - base-devel
+  - zsh
+  - bat # cat replacement
+  - eza # ls replacement
+  - zoxide # cd replacement
+  - btop # system monitor tui
+  - neovim
+  - tailscale
   - curl
   - ffmpeg
   - git
   - git-delta
+  - timeshift # snapshot backups
+  - tmux
+  - waybar # top bar
+  # fonts
+  - ttf-jetbrains-mono-nerd
+  - ttf-0xproto-nerd
+  - ttf-agave-nerd
+  # video player
+  - vlc
+  - mpv
+  # file manager
+  - yazi
+  # languages
+  - go
+  - deno
+  - rustup
+  # browsers
+  - firefox
+  - firefox-developer-edition
+{{- if eq .host.type "laptop" }}
+  - powertop # laptop power mgmnt
+  - power-profiles-daemon # power profiles
+{{- end }}
+{{- if eq .host.distro.de "wayland" }}
+  # wayland
+  - cliphist
+  - wl-clipboard
+  {{- if eq .host.headless "false" }}
+  # non-headless
+  {{- end }}
+{{- end }}
+
 aur:
-{{- if eq .host.features.passwordManager "true" }}
-{{- if eq .host.headless "false" }}
-  - 1password
-{{- end }}
-  - 1password-cli
-{{- end }}
-  - git
   - google-chrome
   - google-chrome-canary
+  - zen-browser-bin
+  - bun-bin
+{{- if eq .host.distro.de "wayland" }}
+  {{- if eq .host.headless "false" }}
   - wl-screenrec
+  - parsec-bin
+  {{- end }}
+{{- end }}

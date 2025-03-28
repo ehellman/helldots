@@ -1,3 +1,29 @@
 .DS_Store
 .key.txt.age
 
+# draupnir only
+{{ if ne .chezmoi.hostname "draupnir" }}
+dot_config/waybar/scripts/executable_amdgpu_stats.sh
+dot_config/waybar/scripts/executable_fw13_fanspeed.sh
+dot_config/waybar/scripts/executable_fw13cpu_stats.sh
+{{ end }}
+
+# isolate linux scripts and settings to linux systems
+{{ if ne .chezmoi.os "linux" }}
+.chezmoiscripts/linux/**
+{{ end }}
+
+# isolate windows scripts and settings to windows systems
+{{ if ne .chezmoi.os "windows" }}
+.chezmoiscripts/windows/**
+AppData
+Documents
+{{ end }}
+
+# isolate darwin scripts and settings to darwin systems
+{{ if ne .chezmoi.os "darwin" }}
+.chezmoiscripts/darwin/**
+Library
+{{ end }}
+
+
