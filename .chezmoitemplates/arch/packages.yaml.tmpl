@@ -15,7 +15,6 @@ pacman:
   - curl
   - ffmpeg
   - fzf
-  - fnm # node version manager
   - pyenv # python version manager
   - git
   - git-delta
@@ -61,6 +60,7 @@ pacman:
 
 aur:
   - bun-bin
+  - fnm-bin # node version manager
 {{- if eq .host.distro.de "wayland" }}
   {{- if eq .host.headless "false" }}
   - google-chrome
