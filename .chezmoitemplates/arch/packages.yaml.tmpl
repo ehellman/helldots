@@ -10,6 +10,7 @@ pacman:
   - eza # ls replacement
   - zoxide # cd replacement
   - btop # system monitor tui
+  - dust # disk space
   - neovim
   - tailscale
   - curl
@@ -21,10 +22,6 @@ pacman:
   - pyenv # python version manager
   - git
   - git-delta
-  - timeshift # snapshot backups
-  - rofi # launcher
-  - tmux
-  - waybar # top bar
   # keyring
   - gnome-keyring
   - seahorse # gui to create gnome-keyring
@@ -36,9 +33,6 @@ pacman:
   - ttf-jetbrains-mono-nerd
   - ttf-0xproto-nerd
   - ttf-agave-nerd
-  # video player
-  - vlc
-  - mpv
   # file manager
   - yazi
   # languages
@@ -46,20 +40,40 @@ pacman:
   - deno
   - rustup
   # utils
+  - timeshift # snapshot backups
+  - tmux
+  - ripgrep
+  - jq
+  - gum
+  - gawk
   - gping
+{{- if eq .host.headless "false" }}
+  # non-headless
+  - grim
+  - slurp
+  - easyeffects
+  # image viewer
+  - imv
+  # video player
+  - vlc
+  - mpv
   # browsers
   - firefox
   - firefox-developer-edition
+{{- end }}
 {{- if eq .host.type "laptop" }}
   - powertop # laptop power mgmnt
-  - p#ower-profiles-daemon # power profiles
+  - power-profiles-daemon # power profiles
 {{- end }}
 {{- if eq .host.distro.de "wayland" }}
   # wayland
+  - thunar
+  - rofi-wayland # launcher
   - cliphist
   - wl-clipboard
   {{- if eq .host.headless "false" }}
   # non-headless
+  - waybar # top bar
   {{- end }}
 {{- end }}
 
@@ -69,7 +83,9 @@ aur:
   - lazygit
   - lazydocker
 {{- if eq .host.distro.de "wayland" }}
+  - btrfs-assistant
   {{- if eq .host.headless "false" }}
+  - grimblast-git
   - google-chrome
   - google-chrome-canary
   - zen-browser-bin
