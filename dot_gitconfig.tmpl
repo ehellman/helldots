@@ -8,7 +8,11 @@
 [user]
 	name = Erik Hellman
 	email = iam@erikhellman.com
-  signingkey = {{ ( onepasswordDetailsFields "nmdmjhcc4gxkjw3ehyskqf5uaq" ).public_key.value }}
+{{- if eq .chezmoi.hostname "revnarch" }}
+	signingkey = {{ onepasswordRead "op://code/revnarch/public key" -}}
+{{ else }}
+  	signingkey = {{ ( onepasswordDetailsFields "nmdmjhcc4gxkjw3ehyskqf5uaq" ).public_key.value }}
+{{ end }}
 [hub]
 	protocol = ssh
 [pull]
