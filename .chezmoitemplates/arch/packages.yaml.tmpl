@@ -10,11 +10,20 @@ pacman:
   - tailscale
   - curl
   - ffmpeg
+  - fzf
+  - fnm # node version manager
+  - pyenv # python version manager
   - git
   - git-delta
+  - lazygit
   - timeshift # snapshot backups
+  - rofi # launcher
   - tmux
   - waybar # top bar
+  # bluetooth
+  - bluez
+  - bluez-utils
+  - bluetui
   # fonts
   - ttf-jetbrains-mono-nerd
   - ttf-0xproto-nerd
@@ -28,12 +37,14 @@ pacman:
   - go
   - deno
   - rustup
+  # utils
+  - gping
   # browsers
   - firefox
   - firefox-developer-edition
 {{- if eq .host.type "laptop" }}
   - powertop # laptop power mgmnt
-  - power-profiles-daemon # power profiles
+  - p#ower-profiles-daemon # power profiles
 {{- end }}
 {{- if eq .host.distro.de "wayland" }}
   # wayland
@@ -45,13 +56,14 @@ pacman:
 {{- end }}
 
 aur:
-  - google-chrome
-  - google-chrome-canary
-  - zen-browser-bin
   - bun-bin
 {{- if eq .host.distro.de "wayland" }}
   {{- if eq .host.headless "false" }}
+  - google-chrome
+  - google-chrome-canary
+  - zen-browser-bin
   - wl-screenrec
   - parsec-bin
+  - swayosd-git
   {{- end }}
 {{- end }}
