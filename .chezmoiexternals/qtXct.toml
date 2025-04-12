@@ -1,0 +1,8 @@
+[".config/qt5ct/colors/catppuccin-mocha-lavender.conf"]
+	type = "file"
+	url = "https://raw.githubusercontent.com/catppuccin/qt5ct/refs/heads/main/themes/catppuccin-mocha-lavender.conf"
+	refreshPeriod = "168h"
+[".config/qt6ct/colors/catppuccin-mocha-lavender.conf"]
+	type = "file"
+	url = "https://raw.githubusercontent.com/catppuccin/qt5ct/refs/heads/main/themes/catppuccin-mocha-lavender.conf"
+	refreshPeriod = "168h"
