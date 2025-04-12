@@ -139,7 +139,7 @@ eval "$(atuin init zsh)"
 eval "$(zoxide init zsh)"
 
 # fnm
-eval "$(fnm env)"
+eval "$(fnm env --use-on-cd --corepack-enabled --version-file-strategy recursive)"
 eval "$(fnm completions --shell zsh)"
 
 # tailscale
