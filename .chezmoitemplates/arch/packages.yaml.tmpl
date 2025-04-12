@@ -18,7 +18,6 @@ pacman:
   - pyenv # python version manager
   - git
   - git-delta
-  - lazygit
   - timeshift # snapshot backups
   - rofi # launcher
   - tmux
@@ -61,6 +60,8 @@ pacman:
 aur:
   - bun-bin
   - fnm-bin # node version manager
+  - lazygit
+  - lazydocker
 {{- if eq .host.distro.de "wayland" }}
   {{- if eq .host.headless "false" }}
   - google-chrome
