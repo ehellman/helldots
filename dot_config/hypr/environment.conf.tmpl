@@ -26,3 +26,8 @@ env = ELECTRON_ENABLE_WAYLAND,1
 env = ELECTRON_OZONE_PLATFORM_HINT,wayland
 {{- end }}
 
+{{- if eq .chezmoi.hostname "revnarch" }}
+# nvidia
+env = LIBVA_DRIVER_NAME,nvidia
+env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+{{- end }}
