@@ -6,28 +6,42 @@
 
 env = XCURSOR_SIZE,24
 env = HYPRCURSOR_SIZE,24
+{{- if eq .chezmoi.hostname "revnarch" }}
+env = GDK_SCALE,1
+{{- else }}
+env = GDK_SCALE,2
+{{- end }}
+
+### XDG
 env = XDG_SESSION_TYPE,wayland
 env = XDG_SESSION_DESKTOP,Hyprland
 env = XDG_CURRENT_DESKTOP,Hyprland  
-env = GDK_SCALE,2
 
+### QT
 env = QT_AUTO_SCREEN_SCALE_FACTOR,1
 env = QT_QPA_PLATFORM,wayland;xcb
 env = QT_QPA_PLATFORMTHEME,qt6ct
-# env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
-
+env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
  
-{{- if eq .host.distro.de "wayland" }}
+### wayland
 # enable wayland env variables for firefox
 env = MOZ_DBUS_REMOTE,1
 env = MOZ_ENABLE_WAYLAND,1
+
 # enable wayland-mode for multiple apps (1password etc)
-env = ELECTRON_ENABLE_WAYLAND,1
-env = ELECTRON_OZONE_PLATFORM_HINT,wayland
-{{- end }}
+# 2025-04-12 - this now bricks the 1password rich prompt ....
+# env = ELECTRON_ENABLE_WAYLAND,1
+# env = ELECTRON_OZONE_PLATFORM_HINT,wayland
+
+# ozone 
+env = OZONE_PLATFORM_HINT,auto
+env = OZONE_PLATFORM,wayland
 
 {{- if eq .chezmoi.hostname "revnarch" }}
-# nvidia
+### nvidia
 env = LIBVA_DRIVER_NAME,nvidia
 env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+env = GBM_BACKEND,nvidia-drm
+env = WLR_DRM_NO_ATOMIC,1
+# env = __GL_VRR_ALLOWED,1
 {{- end }}
