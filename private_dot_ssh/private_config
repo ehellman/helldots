@@ -22,3 +22,6 @@ Host *
 	ServerAliveInterval 300
 	# Disconnect after X failed keep-alive responses
 	ServerAliveCountMax 2
+
+Host draupnir revnarch
+  ForwardAgent yes
