@@ -1,0 +1,68 @@
+alias jctl="journalctl -p 3 -xb"
+
+alias ls='eza --color=auto --icons --group-directories-first'
+alias l='ls -lhF'
+alias la='ls -lhAF'
+alias tree='ls --tree'
+alias cd='z'
+
+alias cat='bat --wrap character'
+alias ping='gping'
+alias yay='paru'
+
+alias t='tmux'
+alias ta='tmux attach'
+alias tl='tmux list-sessions'
+alias tk='tmux kill-session -t'
+
+function n() {
+  APPNAME=$(gum choose --header "Which nvim configuration would you like to use?" "hellman" "lazyvim" "lazydev")
+  NVIM_APPNAME=nvim-$APPNAME nvim "$@"
+}
+
+alias nvim='NVIM_APPNAME=nvim-hellman nvim'
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+		zoxide add "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+{{ if eq .chezmoi.hostname "revnarch" }}
+### CPU
+# alias cpu_performance="echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+# alias cpu_powersave="echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+# alias cpu_schedutil="echo schedutil | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+# alias cpu_epp_performance="echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference"
+
+alias cpu_watch="watch -n 1 \"cat /proc/cpuinfo | grep \"^[c]pu MHz\"\""
+
+function cpu_governor() {
+  local current=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
+  local selected=$(gum choose --header "Select governor. Current: $current" $(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors))
+  if [ ! -z "$selected" ]; then
+    echo "Setting governor to: $selected"
+    echo $selected | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > /dev/null
+    echo "Governor set successfully!"
+  else
+    echo "No governor change made."
+  fi
+}
+
+
+function cpu_epp() {
+  local current=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference)
+  local selected=$(gum choose --header "Select EPP. Current: $current" $(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences))
+  if [ ! -z "$selected" ]; then
+    echo "Setting EPP to: $selected"
+    echo $selected | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference > /dev/null
+    echo "EPP set successfully!"
+  else
+    echo "No EPP change made."
+  fi
+}
+{{ end }}
