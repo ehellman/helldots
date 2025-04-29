@@ -30,6 +30,8 @@ alias \
   grep='grep --color=auto'
   ip='ip -color=auto'
 
+alias pvf="pacman -Slq | fzf -m --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S"
+
 function n() {
   APPNAME=$(gum choose --header "Which nvim configuration would you like to use?" "hellman" "lazyvim" "lazydev")
   NVIM_APPNAME=nvim-$APPNAME nvim "$@"
