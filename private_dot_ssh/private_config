@@ -1,8 +1,4 @@
-
 Host *
-	# use 1password ssh agent
-	IdentityAgent ~/.1password/agent.sock
-	#
 	# always use ssh2
 	Protocol 2
 	#
@@ -22,6 +18,10 @@ Host *
 	ServerAliveInterval 300
 	# Disconnect after X failed keep-alive responses
 	ServerAliveCountMax 2
+
+# use 1password agent when running locally (not through SSH)
+Match host * exec "test -z $SSH_TTY"
+  IdentityAgent ~/.1password/agent.sock
 
 Host draupnir revnarch
   ForwardAgent yes
