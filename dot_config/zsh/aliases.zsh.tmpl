@@ -25,6 +25,11 @@ alias \
   gra='git rebase --abort' \
   gri='git rebase -i' \
 
+### colorize
+alias \
+  grep='grep --color=auto'
+  ip='ip -color=auto'
+
 function n() {
   APPNAME=$(gum choose --header "Which nvim configuration would you like to use?" "hellman" "lazyvim" "lazydev")
   NVIM_APPNAME=nvim-$APPNAME nvim "$@"
