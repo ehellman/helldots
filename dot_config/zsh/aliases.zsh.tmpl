@@ -15,6 +15,16 @@ alias ta='tmux attach'
 alias tl='tmux list-sessions'
 alias tk='tmux kill-session -t'
 
+### git
+alias \
+  gs='git status' \
+  grh='git reset --hard' \
+  gfa='git fetch --all' \
+  gco='git checkout' \
+  grc='git rebase --continue' \
+  gra='git rebase --abort' \
+  gri='git rebase -i' \
+
 function n() {
   APPNAME=$(gum choose --header "Which nvim configuration would you like to use?" "hellman" "lazyvim" "lazydev")
   NVIM_APPNAME=nvim-$APPNAME nvim "$@"
