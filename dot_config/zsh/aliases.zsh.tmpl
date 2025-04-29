@@ -32,6 +32,13 @@ alias \
 
 alias pvf="pacman -Slq | fzf -m --preview 'pacman -Si {1}' | xargs -ro sudo pacman -S"
 
+### command replacement
+alias \
+    cp="cp -vi" \
+    rm="rm -vi" \
+    mv="mv -vi" \
+
+### nvim
 function n() {
   APPNAME=$(gum choose --header "Which nvim configuration would you like to use?" "hellman" "lazyvim" "lazydev")
   NVIM_APPNAME=nvim-$APPNAME nvim "$@"
