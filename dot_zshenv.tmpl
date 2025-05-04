@@ -1,0 +1,7 @@
+# unset the default TRAPUSR1, which will cause the zsh to exit
+# this is need in case of USR1 signal is sent (i.e. for updating env variables in tmux)
+# before the custom trap is installed
+TRAPUSR1() {}
+
+source "{{ .path.zshConfig }}/xdg.zsh"
+source "{{ .path.zshConfig }}/environment.zsh"

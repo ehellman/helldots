@@ -20,7 +20,10 @@ Host *
 	ServerAliveCountMax 2
 
 # use 1password agent when running locally (not through SSH)
-Match host * exec "test -z $SSH_TTY"
+# Match host * exec "test -z $SSH_TTY"
+#   IdentityAgent ~/.1password/agent.sock
+
+Match host * exec "test -z $SSH_TTY && test -z $TMUX"
   IdentityAgent ~/.1password/agent.sock
 
 Host draupnir revnarch
