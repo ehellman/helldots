@@ -120,10 +120,21 @@ export ZSH_SYSTEM_CLIPBOARD_METHOD={{ $zsh_system_clipboard_method }}
 source $ZSH_CONFIG/fzf.zsh
 source $ZSH_CONFIG/extensions/fzf-git.sh
 
-# 1password - use SSH agent
-export SSH_AUTH_SOCK=$HOME/.1password/agent.sock
+# SSH agent and 1Password handling
+if [[ -n "$SSH_TTY" ]] || [[ -n "$TMUX" ]]; then
+  # in SSH session or in tmux - use the persistent symlink if it exists
+  # note: this symlink is created by `.ssh/rc`
+  if [[ -S "$HOME/.ssh/ssh_auth_sock" ]]; then
+    export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+  fi
+  # if we're in SSH but the symlink doesn't exist yet, 
+  # keep the original SSH_AUTH_SOCK value
+else
+  # Not in SSH or tmux - use 1Password
+  export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
+fi
 
-# 1password - load plugins
+# 1password - load plugin
 source $XDG_CONFIG_HOME/op/plugins.sh
 
 # 1password-cli - load completions
