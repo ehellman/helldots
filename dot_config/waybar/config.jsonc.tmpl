@@ -11,13 +11,13 @@
   "modules-left": ["hyprland/submap", "hyprland/window"],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
+{{ if eq .chezmoi.hostname "draupnir" }}
     "power-profiles-daemon",
+{{ end }}
     "hyprland/language",
     "backlight",
     "group/pulse-input-group",
     "group/pulse-output-group",
-    // "custom/cpufan",
-    // "custom/cputemp",
 {{ if eq .chezmoi.hostname "draupnir" }}
     "group/cpu-group",
     "custom/gputemp",
@@ -305,6 +305,9 @@
     // "max-length": 10
   },
   "temperature": {
+{{ if eq .chezmoi.hostname "revnarch" }}
+    "hwmon-path": "/sys/class/hwmon/hwmon5/temp1_input",
+{{ end }}
     "interval": 10,
     "critical-threshold": 80,
     "format": " {temperatureC}°C"

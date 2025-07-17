@@ -7,12 +7,12 @@
 * {
   /* `otf-font-awesome` is required to be installed for icons */
   /* font-family: "0xProto Nerd Font Mono"; */
-  font-family: "JetBrainsMono Nerd Font, Font Awesome 6 Pro, Font Awesome 6 Sharp";
+  font-family: "0xProto Nerd Font Mono, Font Awesome 6 Pro, Font Awesome 6 Sharp";
+  /* font-family: "JetBrainsMono Nerd Font, Font Awesome 6 Pro, Font Awesome 6 Sharp"; */
   /* font-family: "0xProto Nerd Font Mono"; */
   font-size: 12px;
   padding: 0;
   margin: 0;
-
 }
 
 tooltip {
@@ -40,12 +40,12 @@ window#waybar {
   /* margin-right: 30px; */
 }
 
-
 .modules-left {
   border-radius: 24px;
 }
 
-.modules-center {}
+.modules-center {
+}
 
 .modules-right {
   background-color: @mantle;
@@ -136,14 +136,13 @@ button:hover {
   color: @text;
 }
 
-
 /* If workspaces is the leftmost module, omit left margin */
-.modules-left>widget:first-child>#workspaces {
+.modules-left > widget:first-child > #workspaces {
   margin-left: 0;
 }
 
 /* If workspaces is the rightmost module, omit right margin */
-.modules-right>widget:last-child>#workspaces {
+.modules-right > widget:last-child > #workspaces {
   margin-right: 0;
 }
 
@@ -181,7 +180,7 @@ label:focus {
 }
 
 #custom-logo {
-  background-image: url('/home/erik/.config/waybar/void.svg');
+  background-image: url("/home/erik/.config/waybar/void.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -193,11 +192,11 @@ label:focus {
   padding: 0;
 }
 
-#cpu-group>*>* {
+#cpu-group > * > * {
   margin-right: 4px;
 }
 
-#cpu-group>*:last-child>* {
+#cpu-group > *:last-child > * {
   margin-right: 0;
 }
 
@@ -214,8 +213,6 @@ label:focus {
 /* 	margin-right: 0; */
 /* 	color: @green; */
 /* } */
-
-
 
 #cpu {
   /* font-size: 10px; */
@@ -302,7 +299,6 @@ label:focus {
   color: @text;
 }
 
-
 #pulse-input-group:hover #pulseaudio.microphone-label,
 #pulse-input-group:hover #pulseaudio.microphone {
   background-color: @surface0;
@@ -369,7 +365,6 @@ trough {
   min-width: 80px;
   border-radius: 5px;
   border: none;
-
 }
 
 highlight {
@@ -432,11 +427,11 @@ highlight {
 /* 	background-color: @background; */
 /* } */
 
-#tray>.passive {
+#tray > .passive {
   -gtk-icon-effect: dim;
 }
 
-#tray>.needs-attention {
+#tray > .needs-attention {
   -gtk-icon-effect: highlight;
   background-color: @red;
 }
