@@ -1,0 +1,64 @@
+# Bash helper functions for chezmoi scripts
+
+# Logging function with script name
+log() {
+    local script_name="${BASH_SOURCE[-1]##*/}"
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$script_name] $1"
+}
+
+# Error handler with line number
+setup_error_handler() {
+    trap 'echo "Error in ${BASH_SOURCE[-1]##*/} on line $LINENO. Exit code: $?" >&2' ERR
+}
+
+# Check if command exists
+command_exists() {
+    command -v "$1" &> /dev/null
+}
+
+# Ensure ownership helper
+ensure_owner() {
+    local file="$1"
+    local desired_owner="$2"
+    local owner=$(stat -c "%U" "$file")
+
+    if [ "$owner" != "$desired_owner" ]; then
+        log "$file is not owned by $desired_owner"
+        sudo chown "$desired_owner:$desired_owner" "$file"
+        log "adjusted ownership for $file to $desired_owner:$desired_owner"
+    else
+        log "$file already owned by $desired_owner"
+    fi
+}
+
+# Ensure permissions helper
+ensure_permissions() {
+    local file="$1"
+    local desired_permissions="$2"
+    local permissions=$(stat -c "%a" "$file")
+
+    if [ "$permissions" -ne "$desired_permissions" ]; then
+        log "$file does not have $desired_permissions permissions."
+        sudo chmod "$desired_permissions" "$file"
+        log "adjusted permissions for $file to $desired_permissions"
+    else
+        log "$file already has the correct permissions ($desired_permissions)."
+    fi
+}
+
+# Create directory if it doesn't exist
+ensure_directory() {
+    local dir="$1"
+    if [ ! -d "$dir" ]; then
+        log "Creating directory: $dir"
+        mkdir -p "$dir"
+    else
+        log "Directory already exists: $dir"
+    fi
+}
+
+# Reset sudo timeout at script end
+reset_sudo() {
+    log "Resetting sudo timeout"
+    sudo -k
+}

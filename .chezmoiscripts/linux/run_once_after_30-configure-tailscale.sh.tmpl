@@ -1,0 +1,60 @@
+{{ if eq .chezmoi.os "linux" -}}
+{{ if eq .host.distro.id "arch" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# Set up error handling
+setup_error_handler
+
+log "Checking Tailscale configuration"
+
+if ! command_exists tailscale; then
+    log "Tailscale is not installed, skipping configuration"
+    exit 0
+fi
+
+# Enable and start tailscaled daemon
+log "Checking tailscaled service status"
+if ! systemctl is-active --quiet tailscaled; then
+    log "Enabling and starting tailscaled service"
+    if ! sudo systemctl enable --now tailscaled; then
+        log "ERROR: Failed to enable tailscaled service"
+        exit 1
+    fi
+    # Wait a moment for the service to start
+    sleep 2
+else
+    log "Tailscaled service is already running"
+    
+    # TODO: Check if versions mismatch
+    # VERSION_MISMATCH=$(tailscale version 2>&1 | grep -c "version mismatch" || true)
+    # if [ "$VERSION_MISMATCH" -gt 0 ]; then
+    #   log "Tailscale client and daemon versions don't match, restarting service"
+    #   sudo systemctl restart tailscaled
+    #   sleep 2
+    # fi
+fi
+
+# Check login status
+log "Checking Tailscale login status"
+TAILSCALE_STATUS=$(tailscale status 2>&1 || true)
+
+if echo "$TAILSCALE_STATUS" | grep -q "Logged out"; then
+    log "Not logged in to Tailscale, initiating login"
+    if ! sudo tailscale login; then
+        log "ERROR: Failed to initiate Tailscale login"
+        exit 1
+    fi
+    log "Tailscale login initiated - check your browser to complete authentication"
+else
+    log "Already logged in to Tailscale"
+fi
+
+log "Tailscale configuration completed"
+reset_sudo
+
+{{ end -}}
+{{ end -}}

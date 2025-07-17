@@ -1,0 +1,77 @@
+#!/bin/bash
+{{ if eq .host.type "laptop" }}
+set -euo pipefail
+
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# Set up error handling
+setup_error_handler
+
+log "Configuring laptop power management udev rules"
+
+# If this does not work, try running:
+# sudo udevadm monitor --subsystem-match=power_supply
+# ... and then unplug/plug the power. look for change events ending in /ACAD,
+# then use `udevadm info` to check what the ONLINE attribute is called.
+
+udev_rule_file="/etc/udev/rules.d/99-powersave.rules"
+supply_state_wrapper="ATTR"      # seen: ATTR | ENV
+power_supply_state_attr="online" # seen: online | POWER_SAVE_ONLINE
+made_changes=false
+
+# Helper function to create/overwrite the rules file
+create_or_overwrite_entire_file() {
+  made_changes=true
+  local file="$1"
+  local content="$2"
+  log "Creating/updating udev rules file: $file"
+  echo -e "$content" | sudo tee "$file" >/dev/null
+}
+
+# Define the udev rules
+disconnected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"0\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave true\""
+connected_state="SUBSYSTEM==\"power_supply\", ATTR{type}==\"Mains\", $supply_state_wrapper{$power_supply_state_attr}==\"1\", RUN+=\"$XDG_CONFIG_HOME/scripts/powersave false\""
+
+if [ ! -f "$udev_rule_file" ]; then
+  create_or_overwrite_entire_file "$udev_rule_file" "$disconnected_state\n$connected_state"
+  ensure_permissions "$udev_rule_file" 0644
+else
+  log "$udev_rule_file already exists, checking contents"
+  ensure_permissions "$udev_rule_file" 0644
+
+  line_count=$(wc -l <"$udev_rule_file")
+  if [ "$line_count" -ne 2 ]; then
+    log "Rule file has incorrect number of lines ($line_count), recreating"
+    create_or_overwrite_entire_file "$udev_rule_file" "$disconnected_state\n$connected_state"
+  else
+    # Check each line
+    line1=$(sed -n '1p' "$udev_rule_file")
+    line2=$(sed -n '2p' "$udev_rule_file")
+
+    if [ "$line1" != "$disconnected_state" ]; then
+      log "Disconnected state rule is incorrect, updating"
+      sudo sed -i "1s/.*/$disconnected_state/" "$udev_rule_file"
+      made_changes=true
+    fi
+
+    if [ "$line2" != "$connected_state" ]; then
+      log "Connected state rule is incorrect, updating"
+      sudo sed -i "2s/.*/$connected_state/" "$udev_rule_file"
+      made_changes=true
+    fi
+  fi
+fi
+
+if [ "$made_changes" == true ]; then
+  log "Udev rules were updated, reloading udev"
+  sudo udevadm control --reload
+  log "Udev rules reloaded successfully"
+else
+  log "Udev rules were already correctly configured"
+fi
+
+reset_sudo
+
+{{ end }}
+

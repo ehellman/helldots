@@ -1,0 +1,46 @@
+#!/bin/bash
+{{ if eq .chezmoi.os "linux" -}}
+# packages.yaml.tmpl hash: {{ include ".chezmoitemplates/arch/packages.yaml.tmpl" | sha256sum }}
+set -euo pipefail
+
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# Set up error handling
+setup_error_handler
+
+{{ if eq .host.distro.id "arch" -}}
+
+log "Starting system package installation for Arch Linux"
+
+{{ $pkg := ( includeTemplate ( print .host.distro.id "/packages.yaml.tmpl" ) . | fromYaml ) }}
+
+# Install pacman packages
+{{ if $pkg.pacman -}}
+log "Installing pacman packages ({{ len $pkg.pacman }} packages)"
+if ! sudo pacman -S --needed {{ $pkg.pacman | join " " }}; then
+    log "ERROR: Failed to install some pacman packages"
+    exit 1
+fi
+log "Successfully installed/verified pacman packages"
+{{ else -}}
+log "No pacman packages defined in packages.yaml.tmpl"
+{{ end -}}
+
+# Install AUR packages
+{{ if $pkg.aur -}}
+log "Installing AUR packages ({{ len $pkg.aur }} packages)"
+if ! paru -S --needed {{ $pkg.aur | join " " }}; then
+    log "ERROR: Failed to install some AUR packages"
+    exit 1
+fi
+log "Successfully installed/verified AUR packages"
+{{ else -}}
+log "No AUR packages defined in packages.yaml.tmpl"
+{{ end -}}
+
+log "Package installation completed successfully"
+reset_sudo
+
+{{ end -}}
+{{ end -}}

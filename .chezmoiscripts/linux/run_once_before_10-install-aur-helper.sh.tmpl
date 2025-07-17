@@ -1,0 +1,52 @@
+#!/bin/bash
+{{ if eq .chezmoi.os "linux" -}}
+{{ if eq .host.distro.id "arch" -}}
+set -euo pipefail
+
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# Set up error handling
+setup_error_handler
+
+log "Checking for AUR helper installation"
+
+# Check if paru is already installed
+if command_exists paru; then
+  log "paru is already installed"
+  exit 0
+fi
+
+log "Installing paru AUR helper"
+
+# Install build dependencies
+log "Installing base-devel package group"
+if ! sudo pacman -S --needed base-devel; then
+  log "ERROR: Failed to install base-devel"
+  exit 1
+fi
+
+# Clone and build in a temporary directory
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
+log "Cloning paru repository to temporary directory"
+cd "$TEMP_DIR"
+if ! git clone https://aur.archlinux.org/paru.git; then
+  log "ERROR: Failed to clone paru repository"
+  exit 1
+fi
+
+cd paru
+log "Building and installing paru"
+if ! makepkg -si --noconfirm; then
+  log "ERROR: Failed to build and install paru"
+  exit 1
+fi
+
+log "Successfully installed paru AUR helper"
+reset_sudo
+
+{{ end -}}
+{{ end -}}
+
