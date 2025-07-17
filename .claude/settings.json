@@ -1,0 +1,69 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "pathPattern": "**/*.tmpl",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ \"{file_path}\" =~ \\.tmpl$ ]]; then echo \"Validating template: {file_path}\"; chezmoi execute-template < \"{file_path}\" > /dev/null || (echo \"Template validation failed for {file_path}\" && exit 1); fi'"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "pathPattern": "**/*.tmpl",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ \"{file_path}\" =~ \\.tmpl$ ]]; then echo \"Validating template after edit: {file_path}\"; chezmoi execute-template < \"{file_path}\" > /dev/null || (echo \"Template validation failed for {file_path}\" && exit 1); fi'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "pathPattern": "**/run_*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ \"{file_path}\" =~ run_ ]]; then echo \"Validating script syntax: {file_path}\"; bash -n \"{file_path}\" || (echo \"Script syntax validation failed for {file_path}\" && exit 1); fi'"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "pathPattern": "**/run_*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ \"{file_path}\" =~ run_ ]]; then echo \"Validating script syntax after edit: {file_path}\"; bash -n \"{file_path}\" || (echo \"Script syntax validation failed for {file_path}\" && exit 1); fi'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "pathPattern": "**/.chezmoitemplates/**",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"Running chezmoi diff after template change...\"; chezmoi diff --no-pager || true'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if git -C . rev-parse --git-dir > /dev/null 2>&1; then echo \"Checking git status...\"; git status --porcelain | head -10; fi'"
+          }
+        ]
+      }
+    ]
+  }
+}
