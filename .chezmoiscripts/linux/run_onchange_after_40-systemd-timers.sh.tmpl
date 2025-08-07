@@ -1,0 +1,81 @@
+#!/bin/bash
+
+{{ if eq .chezmoi.os "linux" -}}
+# packages.yaml.tmpl hash: {{ include ".chezmoitemplates/arch/packages.yaml.tmpl" | sha256sum }}
+set -euo pipefail
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+# Set up error handling
+setup_error_handler
+{{ if eq .host.distro.id "arch" -}}
+# Define services to check and enable
+# Add service names here (without .service or .timer extension)
+services=(
+  "tldr-update"
+  # Add more services as needed
+)
+
+log "Checking systemd user services"
+
+# Ensure systemd user directory exists
+systemd_user_dir="$HOME/.config/systemd/user"
+ensure_directory "$systemd_user_dir"
+
+# Track if any errors occurred and which services failed
+has_errors=false
+missing_services=()
+
+# Process each service
+for service_name in "${services[@]}"; do
+  log "Processing service: $service_name"
+
+  service_file="$systemd_user_dir/${service_name}.service"
+  timer_file="$systemd_user_dir/${service_name}.timer"
+
+  # Check if .service file exists (required)
+  if [ ! -f "$service_file" ]; then
+    log "ERROR: Missing required service file: $service_file"
+    has_errors=true
+    missing_services+=("$service_name")
+    continue
+  fi
+
+  # Check if .timer file exists (optional)
+  has_timer=false
+  if [ -f "$timer_file" ]; then
+    has_timer=true
+    log "Found timer file: $timer_file"
+  else
+    log "No timer file found for $service_name (timer is optional)"
+  fi
+
+  # Enable and start the service or timer
+  if [ "$has_timer" = true ]; then
+    log "Enabling and starting ${service_name}.timer"
+    systemctl enable --user --now "${service_name}.timer"
+    log "Checking ${service_name}.timer status"
+    systemctl status --user "${service_name}.timer" --no-pager || true
+  else
+    log "Enabling and starting ${service_name}.service"
+    systemctl enable --user --now "${service_name}.service"
+    log "Checking ${service_name}.service status"
+    systemctl status --user "${service_name}.service" --no-pager || true
+  fi
+done
+
+# Reload systemd daemon before processing services
+log "Reloading systemd user daemon"
+systemctl daemon-reload --user
+
+# Exit with error if any service files were missing
+if [ "$has_errors" = true ]; then
+  log "ERROR: The following services were missing their .service files:"
+  for missing in "${missing_services[@]}"; do
+    log "  - $missing"
+  done
+  exit 1
+fi
+
+reset_sudo
+{{ end -}}
+{{ end -}}

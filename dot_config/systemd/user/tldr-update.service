@@ -1,0 +1,12 @@
+[Unit]
+Description=Update tldr pages cache
+Documentation=https://github.com/tealdeer-rs/tealdeer
+Wants=network-online.target
+After=network-online.target nss-lookup.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/tldr --update
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh tldr pages cache weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+AccuracySec=1h
+RandomizedDelaySec=12h
+
+[Install]
+WantedBy=timers.target
