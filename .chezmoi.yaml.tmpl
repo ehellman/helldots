@@ -119,3 +119,10 @@ data:
       data: "{{ .chezmoi.homeDir }}/.local/share"
       state: "{{ .chezmoi.homeDir }}/.local/state"
       bin: "{{ .chezmoi.homeDir }}/bin"
+
+encryption: "age"
+age:
+  identity: "{{ .chezmoi.homeDir }}/.config/chezmoi/key.txt"
+  recipient: "age17w6p4h59e6fg4alujufwvhjja0efm3g55mtmkmglnpsyg9c40c5qe97ek8"
+add:
+  secrets: "warning"

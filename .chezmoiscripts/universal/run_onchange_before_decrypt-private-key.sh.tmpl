@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+KEY_FILE="$HOME/.config/chezmoi/key.txt"
+
+if [ ! -f $KEY_FILE ]; then
+  eval $(op signin)
+  mkdir -p "$HOME/.config/chezmoi"
+  cat >$KEY_FILE <<EOF
+# created: $(date -Iseconds)
+# public key: $(op read "op://code/chezmoi/recipient")
+$(op read "op://code/chezmoi/secret")
+EOF
+  chmod 600 $KEY_FILE
+fi
