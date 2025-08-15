@@ -2,7 +2,7 @@ if [[ -r "{{ .path.xdg.cache }}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "{{ .path.xdg.cache }}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
 # set environment variables
 source $ZSH_CONFIG/path.zsh
