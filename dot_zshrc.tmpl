@@ -150,7 +150,7 @@ TRAPUSR1() {
 }
 
 # 1password - load plugin
-source $XDG_CONFIG_HOME/op/plugins.sh
+[[ ! -f $XDG_CONFIG_HOME/op/plugins.sh ]] || source $XDG_CONFIG_HOME/op/plugins.sh
 
 # 1password-cli - load completions
 eval "$(op completion zsh)"; compdef _op op
