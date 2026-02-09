@@ -57,6 +57,23 @@ TOKYONIGHT_STORM="
   --color=spinner:#ff007c
 "
 
+VIM_MOONFLY="
+  --color bg:#080808 \
+  --color bg+:#262626 \
+  --color border:#2e2e2e \
+  --color fg:#b2b2b2 \
+  --color fg+:#e4e4e4 \
+  --color gutter:#262626 \
+  --color header:#80a0ff \
+  --color hl+:#f09479 \
+  --color hl:#f09479 \
+  --color info:#cfcfb0 \
+  --color marker:#f09479 \
+  --color pointer:#ff5189 \
+  --color prompt:#80a0ff \
+  --color spinner:#36c692
+"
+
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --cycle \
   --highlight-line \
@@ -69,7 +86,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --bind=ctrl-f:preview-page-down,ctrl-b:preview-page-up \
   --bind=ctrl-a:beginning-of-line,ctrl-e:end-of-line \
   --bind=ctrl-j:down,ctrl-k:up \
-  $TOKYONIGHT_NIGHT \
+  $VIM_MOONFLY \
 "
 source <(fzf --zsh)
 
