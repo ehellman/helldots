@@ -9,9 +9,9 @@
 	name = Erik Hellman
 	email = iam@erikhellman.com
 {{- if eq .chezmoi.hostname "revnarch" }}
-	signingkey = {{ onepasswordRead "op://code/revnarch/public key" -}}
+	; signingkey = {{ onepasswordRead "op://code/revnarch/public key" -}}
 {{ else }}
-  	signingkey = {{ ( onepasswordDetailsFields "nmdmjhcc4gxkjw3ehyskqf5uaq" ).public_key.value }}
+  	; signingkey = {{ ( onepasswordDetailsFields "nmdmjhcc4gxkjw3ehyskqf5uaq" ).public_key.value }}
 {{ end }}
 [hub]
 	protocol = ssh
@@ -41,3 +41,10 @@
 	insteadOf = https://github.com/
 [url "git@bitbucket.org:"]
 	insteadOf = https://bitbucket.org/
+
+[include]
+  path = ~/.gitconfig-ed25519
+[includeIf "gitdir:~/code/ecommerce/"]
+  path = ~/.gitconfig-rsa
+[includeIf "gitdir:~/code/alexandria/"]
+  path = ~/.gitconfig-rsa
