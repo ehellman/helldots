@@ -12,6 +12,10 @@ application/x-extension-xht=firefox.desktop
 image/png=imv.desktop
 image/jpeg=imv.desktop
 x-scheme-handler/discord=vesktop.desktop
+x-scheme-handler/about=firefox.desktop
+x-scheme-handler/unknown=firefox.desktop
+image/vnd.microsoft.icon=mpv.desktop
+x-scheme-handler/bruno=bruno.desktop
 
 [Added Associations]
 x-scheme-handler/http=firefox.desktop;
@@ -27,3 +31,4 @@ application/x-extension-xht=firefox.desktop;
 image/png=imv.desktop;
 image/jpeg=imv.desktop;
 application/toml=userapp-nvim-DVQI22.desktop;
+image/vnd.microsoft.icon=mpv.desktop;
