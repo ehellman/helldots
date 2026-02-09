@@ -15,6 +15,7 @@ pacman:
   - neovim
   - tailscale
   - curl
+  - tealdeer
   - ffmpeg
   - ffmpegthumbnailer
   - fd
@@ -23,6 +24,7 @@ pacman:
   - pyenv # python version manager
   - git
   - git-delta
+  - gvfs
   # keyring
   - gnome-keyring
   - seahorse # gui to create gnome-keyring
@@ -88,10 +90,10 @@ pacman:
 {{- end }}
 
 aur:
-  - bun-bin
+  - bun
   - fnm-bin # node version manager
   - lazygit
-  - lazydocker
+  - lazydocker-bin
 {{- if eq .host.distro.de "wayland" }}
   - btrfs-assistant
   {{- if eq .host.headless "false" }}
