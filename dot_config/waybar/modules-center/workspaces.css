@@ -2,7 +2,6 @@
 #workspaces {
   background-color: @mantle;
   padding: 6px;
-  /* margin: 0px 5px; */
   border-radius: 24px;
 }
 
@@ -10,8 +9,7 @@
   background-color: transparent;
   transition-property: all;
   padding: 0px 7px;
-  color: @text;
-  /* border: 2px solid @base; */
+  color: @overlay1;
   border-radius: 24px;
 }
 
@@ -20,13 +18,10 @@
   padding: 0px 15px;
   color: @text;
   background-color: @surface1;
-  /* border-color: @surface1; */
 }
 
 #workspaces button.active {
-  /*background-color: @surface2;*/
-  background-color: @lavender;
-  /* border: 2px solid @lavender; */
+  background-color: @text;
   color: @base;
   transition-duration: 100ms;
   border-radius: 24px;
@@ -35,7 +30,8 @@
 }
 
 #workspaces button.focused {
-  background-color: @yellow;
+  background-color: @subtext0;
+  color: @base;
 }
 
 #workspaces button.urgent {
@@ -48,6 +44,6 @@
 }
 
 #workspaces button.special.active {
-  background-color: @sky;
-  color: @mantle;
+  background-color: @subtext0;
+  color: @base;
 }

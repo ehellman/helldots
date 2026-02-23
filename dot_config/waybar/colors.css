@@ -1,65 +1,29 @@
-@define-color cursor #3D4D6E;
-@define-color background #1e1e2e;
-@define-color foreground #cdd6f4;
-@define-color color0  #C1C5CD;
-@define-color color1  #6680B7;
-@define-color color2  #6680B7;
-@define-color color3  @base;
-@define-color color4  @base;
-@define-color color5  #3B5279;
-@define-color color6  #2D4364;
-@define-color color7  @base;
-@define-color color8  #0F2237;
-@define-color color9  #88ABF4;
-@define-color color10 #88ABF4;
-@define-color color11 #7596D8;
-@define-color color12 #6282BD;
-@define-color color13 #4F6DA1;
-@define-color color14 #3C5986;
-@define-color color15 @text;
-/*@define-color color15 #141A25;*/
+/* Vercel-style monochrome palette */
+/* Background scale (dark to light) */
+@define-color background #000000;
+@define-color mantle #0a0a0a;
+@define-color crust #050505;
+@define-color surface0 #171717;
+@define-color surface1 #222222;
+@define-color surface2 #333333;
 
-@define-color rosewater #f5e0dc;
-@define-color flamingo #f2cdcd;
-@define-color pink #f5c2e7;
-@define-color mauve #cba6f7;
-@define-color red #f38ba8;
-@define-color maroon #eba0ac;
-@define-color peach #fab387;
-@define-color yellow #f9e2af;
-@define-color green #a6e3a1;
-@define-color teal #94e2d5;
-@define-color sky #89dceb;
-@define-color sapphire #74c7ec;
-@define-color blue #89b4fa;
-@define-color lavender #b4befe;
-@define-color text #cdd6f4;
-@define-color subtext1 #bac2de;
-@define-color subtext0 #a6adc8;
-@define-color overlay2 #9399b2;
-@define-color overlay1 #7f849c;
-@define-color overlay0 #6c7086;
-@define-color surface2 #585b70;
-@define-color surface1 #45475a;
-@define-color surface0 #313244;
-@define-color base #1e1e2e;
-@define-color mantle #181825;
-@define-color crust #11111b;
+/* Foreground scale (bright to dim) */
+@define-color text #ffffff;
+@define-color subtext1 #ededed;
+@define-color subtext0 #a1a1a1;
+@define-color overlay2 #888888;
+@define-color overlay1 #666666;
+@define-color overlay0 #444444;
 
+/* Semantic colors - minimal, only when meaning is needed */
+@define-color red #ef4444;
+@define-color green #22c55e;
+@define-color yellow #eab308;
+@define-color blue #3b82f6;
 
-/*@define-color color0  #C1C5CD;*/
-/*@define-color color1  #6680B7;*/
-/*@define-color color2  #6680B7;*/
-/*@define-color color3  #5871A2;*/
-/*@define-color color4  #4A618E;*/
-/*@define-color color5  #3B5279;*/
-/*@define-color color6  #2D4364;*/
-/*@define-color color7  #3D4D6E;*/
-/*@define-color color8  #0F2237;*/
-/*@define-color color9  #88ABF4;*/
-/*@define-color color10 #88ABF4;*/
-/*@define-color color11 #7596D8;*/
-/*@define-color color12 #6282BD;*/
-/*@define-color color13 #4F6DA1;*/
-/*@define-color color14 #3C5986;*/
-/*@define-color color15 #141A25;*/
+/* Legacy aliases mapped to monochrome */
+@define-color base #000000;
+@define-color lavender #ffffff;
+@define-color sky #a1a1a1;
+@define-color cursor #333333;
+@define-color foreground #ffffff;

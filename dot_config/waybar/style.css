@@ -1,15 +1,10 @@
-/* @import url("file:///home/flexksx/.config/wallust/templates/colors-gtk3.css"); */
 @import url("colors.css");
 @import url("./modules-right/modules-right-import.css");
 @import url("./modules-center/modules-center-import.css");
 @import url("./modules-left/modules-left-import.css");
 
 * {
-  /* `otf-font-awesome` is required to be installed for icons */
-  /* font-family: "0xProto Nerd Font Mono"; */
   font-family: "0xProto Nerd Font Mono, Font Awesome 6 Pro, Font Awesome 6 Sharp";
-  /* font-family: "JetBrainsMono Nerd Font, Font Awesome 6 Pro, Font Awesome 6 Sharp"; */
-  /* font-family: "0xProto Nerd Font Mono"; */
   font-size: 12px;
   padding: 0;
   margin: 0;
@@ -17,8 +12,7 @@
 
 tooltip {
   border-radius: 4px;
-  background-color: @mantle;
-  /* border: 2px solid @surface0; */
+  background-color: @surface0;
   padding: 5px;
 }
 
@@ -29,15 +23,12 @@ tooltip label {
 
 /* Overall Waybar styling */
 window#waybar {
-  /* min-height: 20px; */
   background-color: transparent;
   transition-property: background-color;
   transition-duration: 0.5s;
   border-radius: 24px;
   padding: 0;
   margin: 0;
-  /* margin-left: 30px; */
-  /* margin-right: 30px; */
 }
 
 .modules-left {
@@ -49,34 +40,20 @@ window#waybar {
 
 .modules-right {
   background-color: @mantle;
-  /*padding: 2px;*/
-  /* border: 2px solid @surface0; */
   border-radius: 24px;
 }
 
-/* #custom-separator { */
-/* 	font-size: 30px; */
-/* 	background-color: transparent; */
-/* 	color: @base; */
-/* } */
-
 button {
-  /* Use box-shadow instead of border so the text isn't offset */
-  /*box-shadow: inset 0 -3px transparent;*/
-  /* Avoid rounded borders under each button name */
   border: none;
   border-radius: 0;
 }
 
-/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
 button:hover {
   background: inherit;
-  /*box-shadow: inset 0 -3px #ffffff;*/
 }
 
 #mode {
-  background-color: #64727d;
-  /*box-shadow: inset 0 -3px #ffffff;*/
+  background-color: @surface1;
 }
 
 #submap,
@@ -88,8 +65,6 @@ button:hover {
 #temperature,
 #backlight,
 #network,
-/* #pulse-input-group, */
-/* #pulse-output-group, */
 #wireplumber,
 #custom-notification,
 #custom-media,
@@ -104,7 +79,6 @@ button:hover {
 #mpd {
   background-color: @mantle;
   border-radius: 20px;
-  /* padding: 0 8px; */
   padding: 0 6px;
   transition: color 0.3s ease;
   color: @subtext0;
@@ -152,7 +126,6 @@ button:hover {
   font-size: 20px;
   margin: 0;
   padding: 0 8px;
-  /* font-size: 24px; */
 }
 
 #power-profiles-daemon:hover {
@@ -188,7 +161,6 @@ label:focus {
 
 #cpu-group {
   border-radius: 24px;
-  /* background-color: @base; */
   padding: 0;
 }
 
@@ -200,38 +172,16 @@ label:focus {
   margin-right: 0;
 }
 
-/* #cpu-group>widget .module { */
-/* 	margin-right: 4px; */
-/* 	border-radius: 24px; */
-/* } */
-/**/
-/* #cpu-group>widget:last-child .module { */
-/* 	margin-right: 0; */
-/* } */
-
-/* cpu widget:last-child { */
-/* 	margin-right: 0; */
-/* 	color: @green; */
-/* } */
-
 #cpu {
-  /* font-size: 10px; */
-  /*border-radius: 0 24px 24px 0;*/
-  /* color: @text; */
-  color: @sky;
-  /* padding: 0 4px 0 8px; */
-  /* padding: 0 4px 0 4px; */
-  /* margin-bottom: -16px; */
-  /* margin-left: -120px; */
+  color: @subtext0;
 }
 
 #custom-cputemp {
-  color: @sky;
-  -gtk-icon-transform: skew(14deg);
+  color: @subtext0;
 }
 
 #custom-cpufan {
-  color: @sky;
+  color: @subtext0;
   font-size: 16px;
   padding: 0 4px;
 }
@@ -246,24 +196,15 @@ label:focus {
   animation-direction: alternate;
 }
 
-#memory {
-  /* background-color: @surface0; */
-}
-
-#disk {
-  /* background-color: @base; */
-}
-
 #backlight {
-  /* background-color: @base; */
 }
 
 #network {
-  background-color: #2980b9;
+  color: @subtext0;
 }
 
 #network.disconnected {
-  background-color: #f53c3c;
+  color: @red;
 }
 
 /* ------------------------------------------------ */
@@ -272,7 +213,6 @@ label:focus {
   color: @subtext0;
   transition: color 0.3s;
   font-size: 12px;
-  /* margin: 0 4px; */
 }
 
 #language:hover {
@@ -280,13 +220,6 @@ label:focus {
 }
 
 /* ------------------------------------------------ */
-
-#pulseaudio,
-#wireplumber {
-  /* background-color: @base; */
-  /* border-radius: 24px; */
-  /* color: @text; */
-}
 
 #pulse-input-group,
 #pulse-output-group {
@@ -319,10 +252,6 @@ label:focus {
   padding: 0 6px;
 }
 
-#pulseaudio.microphone:hover {
-  /* background-color: @surface0; */
-}
-
 #pulseaudio.microphone.source-muted {
   color: @red;
   font-size: 20px;
@@ -335,7 +264,6 @@ label:focus {
 #pulseaudio.output {
   font-size: 16px;
   padding: 0 6px;
-  /* padding: 0 4px 0 0; */
 }
 
 #pulseaudio.output.muted {
@@ -392,40 +320,19 @@ highlight {
 }
 
 #pulseaudio-slider highlight {
-  background-color: @lavender;
+  background-color: @text;
 }
 
 /* ------------------------------------------------ */
 
-#custom-media {
-  background-color: #66cc99;
-  color: #2a5c45;
-  min-width: 100px;
-}
-
-#custom-media.custom-spotify {
-  background-color: #66cc99;
-}
-
-#custom-media.custom-vlc {
-  background-color: #ffa000;
-}
-
 #temperature {
-  /* background-color: @surface0; */
-  /*border-radius: 24px 0 0 24px;*/
-  color: @text;
-  /* padding: 0 4px 0 4px; */
+  color: @subtext0;
 }
 
 #temperature.critical {
   background-color: @mantle;
   color: @red;
 }
-
-/* #tray { */
-/* 	background-color: @background; */
-/* } */
 
 #tray > .passive {
   -gtk-icon-effect: dim;
@@ -437,29 +344,11 @@ highlight {
 }
 
 #idle_inhibitor {
-  background-color: #2d3436;
+  color: @overlay1;
 }
 
 #idle_inhibitor.activated {
-  background-color: #ecf0f1;
-  color: #2d3436;
-}
-
-#mpd {
-  background-color: #66cc99;
-  color: #2a5c45;
-}
-
-#mpd.disconnected {
-  background-color: #f53c3c;
-}
-
-#mpd.stopped {
-  background-color: #90b1b1;
-}
-
-#mpd.paused {
-  background-color: #51a37a;
+  color: @text;
 }
 
 #scratchpad {
@@ -480,13 +369,13 @@ highlight {
 }
 
 #privacy-item.screenshare {
-  background-color: #cf5700;
+  background-color: @yellow;
 }
 
 #privacy-item.audio-in {
-  background-color: #1ca000;
+  background-color: @green;
 }
 
 #privacy-item.audio-out {
-  background-color: #0069d4;
+  background-color: @blue;
 }

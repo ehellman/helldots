@@ -10,7 +10,7 @@
 
 .critical:not(.charging) {
   background-color: @red;
-  color: @mantle;
+  color: @base;
   animation-name: blink;
   animation-duration: 0.5s;
   animation-timing-function: steps(12);
@@ -20,7 +20,7 @@
 
 @keyframes blink {
   to {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: @text;
+    color: @base;
   }
 }
