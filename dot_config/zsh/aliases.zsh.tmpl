@@ -23,7 +23,7 @@ alias \
   gco='git checkout' \
   grc='git rebase --continue' \
   gra='git rebase --abort' \
-  gri='git rebase -i' \
+  gri='git rebase -i $(git merge-base HEAD $(git rev-parse --abbrev-ref origin/HEAD))' \
 
 ### colorize
 alias \
