@@ -149,8 +149,8 @@ TRAPUSR1() {
     fi
 }
 
-# 1password - load plugin
-[[ ! -f $XDG_CONFIG_HOME/op/plugins.sh ]] || source $XDG_CONFIG_HOME/op/plugins.sh
+# 1password - load plugin (skip in Claude Code — op plugin requires interactive IO)
+[[ -n $CLAUDECODE ]] || { [[ ! -f $XDG_CONFIG_HOME/op/plugins.sh ]] || source $XDG_CONFIG_HOME/op/plugins.sh; }
 
 # 1password-cli - load completions
 eval "$(op completion zsh)"; compdef _op op
