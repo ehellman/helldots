@@ -1,0 +1,54 @@
+#!/bin/bash
+{{ if eq .chezmoi.os "linux" -}}
+{{ if eq .host.distro.id "arch" -}}
+set -euo pipefail
+
+# Include shared helpers
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# Set up error handling
+setup_error_handler
+
+log "Checking nodejs stub package (nodejs managed externally via version manager)"
+
+# Already installed
+if pacman -Qi nodejs-stub &>/dev/null; then
+  log "nodejs-stub is already installed"
+  exit 0
+fi
+
+# Remove real nodejs if present (without removing dependents)
+if pacman -Qi nodejs &>/dev/null; then
+  log "Removing system nodejs package (managed externally)"
+  if ! sudo pacman -Rdd --noconfirm nodejs; then
+    log "ERROR: Failed to remove system nodejs"
+    exit 1
+  fi
+fi
+
+# Build and install stub package
+TEMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TEMP_DIR"' EXIT
+
+cat > "$TEMP_DIR/PKGBUILD" << 'EOF'
+pkgname=nodejs-stub
+pkgver=9999
+pkgrel=1
+pkgdesc="Stub package - nodejs is managed externally via a version manager"
+arch=('any')
+provides=("nodejs=$pkgver")
+conflicts=('nodejs')
+EOF
+
+log "Building and installing nodejs-stub package"
+cd "$TEMP_DIR"
+if ! makepkg -si --noconfirm; then
+  log "ERROR: Failed to build/install nodejs-stub"
+  exit 1
+fi
+
+log "Successfully installed nodejs-stub package"
+reset_sudo
+
+{{ end -}}
+{{ end -}}
