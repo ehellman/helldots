@@ -218,6 +218,106 @@ probe_needrestart() {
     if (( n > 0 )); then printf '%s services %s' "$n" "$(mark warn)"; else printf '0 %s' "$(mark ok)"; fi
 }
 
+# --- cleanup plumbing --------------------------------------------------------
+
+# run_action <prompt> <fn> [--destructive]
+# Confirms (unless --clean-all), then runs fn under a spinner. Confirm exit
+# codes: 0 = yes (run), 1 = declined (skip, continue), 130 = Ctrl-C (abort run).
+run_action() {
+    local prompt="$1" fn="$2" flag="${3:-}"
+    local default="--default=true"
+    [[ "$flag" == "--destructive" ]] && default="--default=false"
+
+    if (( CLEAN_ALL )); then
+        "$fn"
+        return 0
+    fi
+
+    if ! command_exists gum; then
+        local ans
+        read -r -p "$prompt [y/N] " ans || { echo "aborted" >&2; exit 130; }
+        [[ "$ans" =~ ^[Yy]$ ]] || { log "skipped: $prompt"; return 0; }
+        "$fn"
+        return 0
+    fi
+
+    set +e
+    gum confirm "$default" "$prompt"
+    local rc=$?
+    set -e
+    case "$rc" in
+        0)   "$fn" ;;
+        1)   log "skipped: $prompt" ;;
+        130) log "aborted by user"; exit 130 ;;
+        # 80 = gum's flag/parse error; any other code falls here too — fail safe
+        # by skipping the (possibly destructive) action rather than running it.
+        *)   log "confirm error ($rc), skipping: $prompt" ;;
+    esac
+}
+
+# Each action previews its impact, then does the work. Destructive paths use
+# ${VAR:?} so an unset/empty path can never expand to `rm -rf /...`.
+
+clean_pkgcache() {
+    log "pacman cache: keeping 2 installed / 0 uninstalled versions"
+    SUDO_USED=1
+    sudo paccache -rk2
+    sudo paccache -ruk0
+}
+
+clean_aur_cache() {
+    local d="${HOME}/.cache/paru/clone"
+    [[ -d "$d" ]] || { log "no paru build cache"; return 0; }
+    log "paru build cache size: $(du -sh "$d" 2>/dev/null | cut -f1 || echo n/a)"
+    rm -rf "${d:?}"/*
+}
+
+vacuum_journal() {
+    SUDO_USED=1
+    sudo journalctl --vacuum-size=500M
+}
+
+empty_trash() {
+    local t="${HOME}/.local/share/Trash"
+    [[ -d "$t" ]] || { log "trash already empty"; return 0; }
+    log "trash size: $(du -sh "$t" 2>/dev/null | cut -f1 || echo n/a)"
+    rm -rf "${t:?}"/*
+}
+
+# Destructive, interactive only — never called from run_clean_all.
+remove_orphans() {
+    local orphans
+    orphans=$(pacman -Qdtq 2>/dev/null) || orphans=""
+    [[ -n "$orphans" ]] || { log "no orphans to remove"; return 0; }
+    log "orphans to remove:"; printf '%s\n' "$orphans"
+    SUDO_USED=1
+    # shellcheck disable=SC2086
+    sudo pacman -Rns $orphans
+}
+
+prune_dev_caches() {
+    local d
+    for d in "${HOME}/.cache/yarn" "${HOME}/.local/share/pnpm/store" "${HOME}/.cache/ms-playwright"; do
+        [[ -d "$d" ]] || continue
+        log "$d: $(du -sh "$d" 2>/dev/null | cut -f1 || echo n/a)"
+        rm -rf "${d:?}"
+    done
+}
+
+# Destructive, $HOME-scoped only — never `find /`.
+clean_broken_symlinks() {
+    local links
+    links=$(find "$HOME" -xtype l 2>/dev/null) || links=""
+    [[ -n "$links" ]] || { log "no broken symlinks under \$HOME"; return 0; }
+    log "broken symlinks:"; printf '%s\n' "$links"
+    printf '%s\n' "$links" | xargs -r rm -v
+}
+
+deep_integrity_check() {
+    log "running pacman -Qkk (read-only, slow)…"
+    pacman -Qkk 2>&1 | grep -vE '0 altered files' || true
+}
+
 # Reset sudo only if we actually escalated, so --report stays pipe-clean.
 cleanup_on_exit() {
     (( SUDO_USED )) && reset_sudo
@@ -303,7 +403,40 @@ render_report_tier_b() {
         printf '%s\n' "${lines[@]}"
     fi
 }
-cleanup_menu()         { echo "(cleanup menu: TODO)"; }
+cleanup_menu() {
+    if ! command_exists gum; then
+        cleanup_menu_fallback
+        return 0
+    fi
+    local choices
+    # gum choose exits non-zero if the user presses Esc; treat that as "nothing".
+    set +e
+    choices=$(gum choose --no-limit --header "Select cleanup actions (space to mark, enter to run):" \
+        "Trim pacman cache" \
+        "Clean AUR build cache" \
+        "Vacuum journal" \
+        "Empty trash" \
+        "Prune dev caches" \
+        "Deep integrity check (slow)" \
+        "Clean broken symlinks (HOME)" \
+        "Remove orphan packages")
+    set -e
+    [[ -n "$choices" ]] || { log "nothing selected"; return 0; }
+
+    local choice
+    while IFS= read -r choice; do
+        case "$choice" in
+            "Trim pacman cache")            run_action "Trim pacman cache?" clean_pkgcache ;;
+            "Clean AUR build cache")        run_action "Clear paru build cache?" clean_aur_cache ;;
+            "Vacuum journal")               run_action "Vacuum journal to 500M?" vacuum_journal ;;
+            "Empty trash")                  run_action "Empty trash?" empty_trash ;;
+            "Prune dev caches")             run_action "Prune yarn/pnpm/playwright caches?" prune_dev_caches ;;
+            "Deep integrity check (slow)")  run_action "Run pacman -Qkk integrity check?" deep_integrity_check ;;
+            "Clean broken symlinks (HOME)") run_action "Delete broken symlinks under \$HOME?" clean_broken_symlinks --destructive ;;
+            "Remove orphan packages")       run_action "Remove orphan packages?" remove_orphans --destructive ;;
+        esac
+    done <<< "$choices"
+}
 run_clean_all()        { echo "(clean-all: TODO)"; }
 
 # Sourcing guard: run main only when executed, not when sourced by tests.
