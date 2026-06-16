@@ -53,6 +53,122 @@ mark() {
     esac
 }
 
+# --- Tier A probes (instant, local, read-only; each degrades to n/a) ---------
+
+# A probe in a `|| fallback` list triggers neither set -e nor the ERR trap, so
+# every probe below either succeeds or yields a safe fallback. Declaration is
+# always split from assignment — `local x=$(...)` would mask the exit code
+# (SC2155) and the `||` guard would never fire.
+
+probe_disk_free() {
+    local pct free status
+    pct=$(df --output=pcent / 2>/dev/null | tail -1 | tr -dc '0-9') || pct=""
+    if [[ -z "$pct" ]]; then printf 'n/a'; return 0; fi
+    free=$(( 100 - pct ))
+    status=$(disk_status "$free" 10)
+    printf '%s%% free %s' "$free" "$(mark "$status")"
+}
+
+probe_pkgcache_size() {
+    local out
+    out=$(du -sh /var/cache/pacman/pkg 2>/dev/null | cut -f1) || out=""
+    printf '%s' "${out:-n/a}"
+}
+
+probe_paru_cache_size() {
+    local out
+    out=$(du -sh "${HOME}/.cache/paru" 2>/dev/null | cut -f1) || out=""
+    printf '%s' "${out:-n/a}"
+}
+
+probe_journal_size() {
+    local out
+    out=$(journalctl --disk-usage 2>/dev/null | grep -oE '[0-9.]+[KMGT]?B' | tail -1) || out=""
+    printf '%s' "${out:-n/a}"
+}
+
+probe_trash_size() {
+    local t="${HOME}/.local/share/Trash" out
+    [[ -d "$t" ]] || { printf 'empty'; return 0; }
+    out=$(du -sh "$t" 2>/dev/null | cut -f1) || out=""
+    printf '%s' "${out:-n/a}"
+}
+
+probe_failed_units() {
+    local n names
+    n=$(systemctl --failed --no-legend --plain 2>/dev/null | wc -l) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n == 0 )); then printf '0 %s' "$(mark ok)"; return 0; fi
+    names=$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | paste -sd, -) || names=""
+    printf '%s %s (%s)' "$n" "$(mark warn)" "$names"
+}
+
+probe_orphans() {
+    # pacman -Qdtq exits 1 when there are no orphans; the `|| n=0` covers it.
+    local n
+    n=$(pacman -Qdtq 2>/dev/null | wc -l) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n == 0 )); then printf '0 %s' "$(mark ok)"; else printf '%s %s' "$n" "$(mark warn)"; fi
+}
+
+probe_pacfiles() {
+    local n
+    n=$(find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' \) 2>/dev/null | wc -l) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n == 0 )); then printf '0 %s' "$(mark ok)"; else printf '%s %s' "$n" "$(mark warn)"; fi
+}
+
+probe_mirrorlist_age() {
+    local f=/etc/pacman.d/mirrorlist mtime now days
+    [[ -r "$f" ]] || { printf 'n/a'; return 0; }
+    mtime=$(stat -c %Y "$f" 2>/dev/null) || { printf 'n/a'; return 0; }
+    now=$(date +%s)
+    days=$(( (now - mtime) / 86400 ))
+    if (( days > 30 )); then printf '%sd old %s' "$days" "$(mark warn)"; else printf '%sd old %s' "$days" "$(mark ok)"; fi
+}
+
+# timer_status <unit> -> "enabled ✓" or "disabled ⚠". Report-only; never enables.
+timer_status() {
+    if systemctl is-enabled --quiet "$1" 2>/dev/null; then
+        printf 'enabled %s' "$(mark ok)"
+    else
+        printf 'disabled %s' "$(mark warn)"
+    fi
+}
+
+probe_power_overlap() {
+    # `if cmd; then ...` — NOT `cmd && ppd=1`, which returns non-zero when the
+    # unit is disabled and would abort under set -e.
+    local ppd=0 ptop=0
+    if systemctl is-enabled --quiet power-profiles-daemon 2>/dev/null; then ppd=1; fi
+    if systemctl is-enabled --quiet powertop 2>/dev/null; then ptop=1; fi
+    if (( ppd && ptop )); then printf 'both enabled %s' "$(mark warn)"; else printf 'ok %s' "$(mark ok)"; fi
+}
+
+probe_timeshift() {
+    command_exists timeshift || { printf 'n/a (not installed)'; return 0; }
+    # sudo -n: non-interactive. If no cached creds, fall back rather than prompt
+    # (keeps the report snappy and pipe-safe).
+    local out n
+    out=$(sudo -n timeshift --list 2>/dev/null) || { printf 'n/a (run with sudo)'; return 0; }
+    n=$(printf '%s\n' "$out" | grep -cE '^[0-9]+' ) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n == 0 )); then printf 'no snapshots %s' "$(mark warn)"; else printf '%s snapshots %s' "$n" "$(mark ok)"; fi
+}
+
+probe_updates() {
+    local off aur
+    off=$(checkupdates 2>/dev/null | wc -l) || off=0   # checkupdates exits 2 when none
+    [[ -z "$off" ]] && off=0
+    if command_exists paru; then
+        aur=$(paru -Qua 2>/dev/null | wc -l) || aur=0   # exits 1 when none
+        [[ -z "$aur" ]] && aur=0
+        printf '%s official, %s AUR' "$off" "$aur"
+    else
+        printf '%s official' "$off"
+    fi
+}
+
 # Reset sudo only if we actually escalated, so --report stays pipe-clean.
 cleanup_on_exit() {
     (( SUDO_USED )) && reset_sudo
@@ -85,7 +201,38 @@ main() {
 }
 
 # --- stubs (filled in by later tasks) ----------------------------------------
-render_report_tier_a() { echo "(tier A report: TODO)"; }
+render_report_tier_a() {
+    local lines=()
+    lines+=("# helldoctor — health report")
+    lines+=("")
+    lines+=("## Tier A — local")
+    lines+=("- **Disk /**            $(probe_disk_free)")
+    lines+=("- **Pacman cache**      $(probe_pkgcache_size)")
+    lines+=("- **paru cache**        $(probe_paru_cache_size)")
+    lines+=("- **Journal**           $(probe_journal_size)")
+    lines+=("- **Trash**             $(probe_trash_size)")
+    lines+=("- **Failed units**      $(probe_failed_units)")
+    lines+=("- **Orphan packages**   $(probe_orphans)")
+    lines+=("- **.pacnew/.pacsave**  $(probe_pacfiles)")
+    lines+=("- **Mirrorlist**        $(probe_mirrorlist_age)")
+    lines+=("- **fstrim.timer**      $(timer_status fstrim.timer)")
+    lines+=("- **paccache.timer**    $(timer_status paccache.timer)")
+    lines+=("- **Power tooling**     $(probe_power_overlap)")
+    lines+=("- **Timeshift**         $(probe_timeshift)")
+    lines+=("- **Pending updates**   $(probe_updates)")
+    lines+=("")
+    lines+=("> ⚠ items are config issues — see docs/system-audit.md (not auto-fixed).")
+    # Pretty when glanceable (interactive TTY); plain markdown when piped or
+    # redirected, so `helldoctor --report | foo` is parseable. The spec calls
+    # --report "glanceable / pipeable" — the `[[ -t 1 ]]` gate satisfies both.
+    # (Tier B spinner output is captured per-probe into $out, so nothing else
+    # leaks to stdout; gum format's ANSI is the only pipeability concern.)
+    if command_exists gum && [[ -t 1 ]]; then
+        printf '%s\n' "${lines[@]}" | gum format
+    else
+        printf '%s\n' "${lines[@]}"
+    fi
+}
 render_report_tier_b() { echo "(tier B report: TODO)"; }
 cleanup_menu()         { echo "(cleanup menu: TODO)"; }
 run_clean_all()        { echo "(clean-all: TODO)"; }
