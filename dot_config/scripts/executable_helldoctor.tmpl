@@ -437,7 +437,17 @@ cleanup_menu() {
         esac
     done <<< "$choices"
 }
-run_clean_all()        { echo "(clean-all: TODO)"; }
+# Safe, reversible cleanups only. No confirms (CLEAN_ALL gates run_action), and
+# deliberately NO remove_orphans / clean_broken_symlinks — those need human eyes.
+run_clean_all() {
+    log "running safe cleanups non-interactively"
+    run_action "Trim pacman cache" clean_pkgcache
+    run_action "Clean AUR build cache" clean_aur_cache
+    run_action "Vacuum journal" vacuum_journal
+    run_action "Empty trash" empty_trash
+    run_action "Prune dev caches" prune_dev_caches
+    log "clean-all complete"
+}
 
 # Sourcing guard: run main only when executed, not when sourced by tests.
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

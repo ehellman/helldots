@@ -30,4 +30,23 @@ check "disk_status below min"  "warn"    "$(call disk_status 5 10)"
 check "mark ok"                "✓"       "$(call mark ok)"
 check "mark warn"              "⚠"       "$(call mark warn)"
 
+# run_clean_all must never invoke gum confirm (it would hang non-interactively).
+# Source the script, stub gum to fail loudly if called, and dry-run the actions
+# by stubbing every cleanup fn. CLEAN_ALL=1 means run_action calls fn directly.
+clean_all_calls_no_confirm() {
+    (
+        source "$rendered"
+        CLEAN_ALL=1
+        gum() { echo "CONFIRM-CALLED" >&2; return 0; }
+        clean_pkgcache() { :; }; clean_aur_cache() { :; }; vacuum_journal() { :; }
+        empty_trash() { :; }; prune_dev_caches() { :; }
+        out=$(run_clean_all 2>&1)
+        if grep -q CONFIRM-CALLED <<< "$out"; then echo "confirm-called"; else echo "no-confirm"; fi
+    )
+}
+check "clean-all never confirms" "no-confirm" "$(clean_all_calls_no_confirm)"
+
+# run_clean_all must not reference the orphan/symlink removers.
+check "clean-all excludes orphans" "" "$(grep -c 'remove_orphans\|clean_broken_symlinks' <<< "$(sed -n '/^run_clean_all()/,/^}/p' "$rendered")" | grep -v '^0$')"
+
 exit "$fail"
