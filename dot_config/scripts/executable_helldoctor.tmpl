@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# helldoctor — interactive system maintenance for the Arch machines in this repo.
+# Read-only health report + safe, reversible disk-cleanup actions. Surfaces
+# (never fixes) the config issues tracked in docs/system-audit.md.
+set -euo pipefail
+
+# Inlined shared helpers (chezmoi expands this at apply time): log,
+# command_exists, setup_error_handler, reset_sudo, ensure_* ...
+{{ template "bash/helpers.sh.tmpl" . }}
+
+# --- globals -----------------------------------------------------------------
+CLEAN_ALL=0      # set by --clean-all; when 1, never call gum confirm
+REPORT_ONLY=0    # set by --report
+SUDO_USED=0      # flipped to 1 the first time we escalate; gates the EXIT reset
+
+usage() {
+    cat <<'EOF'
+helldoctor — system maintenance
+
+Usage:
+  helldoctor              Health report, then interactive cleanup menu (default)
+  helldoctor --report     Health report only (Tier A + Tier B), no menu
+  helldoctor --clean-all  Run the safe cleanups non-interactively (skips orphans)
+  helldoctor --help       This help
+EOF
+}
+
+# Reset sudo only if we actually escalated, so --report stays pipe-clean.
+cleanup_on_exit() {
+    (( SUDO_USED )) && reset_sudo
+    return 0
+}
+
+main() {
+    setup_error_handler
+    trap cleanup_on_exit EXIT
+
+    case "${1:-}" in
+        --help|-h) usage; return 0 ;;
+        --report)  REPORT_ONLY=1 ;;
+        --clean-all) CLEAN_ALL=1 ;;
+        "") ;;
+        *) echo "helldoctor: unknown option '$1'" >&2; usage >&2; return 2 ;;
+    esac
+
+    if (( CLEAN_ALL )); then
+        run_clean_all
+        return 0
+    fi
+
+    render_report_tier_a
+    if (( REPORT_ONLY )); then
+        render_report_tier_b
+        return 0
+    fi
+    cleanup_menu
+}
+
+# --- stubs (filled in by later tasks) ----------------------------------------
+render_report_tier_a() { echo "(tier A report: TODO)"; }
+render_report_tier_b() { echo "(tier B report: TODO)"; }
+cleanup_menu()         { echo "(cleanup menu: TODO)"; }
+run_clean_all()        { echo "(clean-all: TODO)"; }
+
+# Sourcing guard: run main only when executed, not when sourced by tests.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
