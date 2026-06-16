@@ -169,6 +169,55 @@ probe_updates() {
     fi
 }
 
+# spin <title> <cmd...> -> runs cmd under a gum spinner (capturing stdout) or,
+# without gum, prints the title to stderr and runs cmd directly. One external
+# command per spin, as gum requires.
+spin() {
+    local title="$1"; shift
+    if command_exists gum; then
+        gum spin --show-output --title "$title" -- "$@"
+    else
+        printf '%s...\n' "$title" >&2
+        "$@"
+    fi
+}
+
+# --- Tier B probes (network / full-scan; exit codes UNVERIFIED, see plan) ----
+# Real exit codes for arch-audit/checkrebuild/needrestart were not verified at
+# design time (the tools weren't installed). Each is wrapped so a non-zero exit
+# degrades to a count of 0, never an abort: `|| true` after the captured spin,
+# then count the lines. Confirm the true codes at build time (see Step 4).
+
+probe_cve() {
+    command_exists arch-audit || { printf 'n/a (arch-audit not installed)'; return 0; }
+    local out n
+    out=$(spin "Scanning for CVEs" timeout 30 arch-audit -u) || true
+    n=$(printf '%s' "${out:-}" | grep -c . ) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n > 0 )); then printf '%s vulnerable %s' "$n" "$(mark warn)"; else printf '0 %s' "$(mark ok)"; fi
+}
+
+probe_rebuilds() {
+    command_exists checkrebuild || { printf 'n/a (rebuild-detector not installed)'; return 0; }
+    local out n
+    out=$(spin "Checking AUR rebuilds" timeout 60 checkrebuild) || true
+    n=$(printf '%s' "${out:-}" | grep -c . ) || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n > 0 )); then printf '%s need rebuild %s' "$n" "$(mark warn)"; else printf '0 %s' "$(mark ok)"; fi
+}
+
+probe_needrestart() {
+    command_exists needrestart || { printf 'n/a (needrestart not installed)'; return 0; }
+    # Distinguish "couldn't check" from "0 stale services": without cached sudo
+    # creds the spin returns empty and would otherwise misreport a healthy 0.
+    if ! sudo -n true 2>/dev/null; then printf 'n/a (needs sudo)'; return 0; fi
+    local out n
+    out=$(spin "Checking stale services" timeout 30 sudo -n needrestart -b) || true
+    n=$(printf '%s' "${out:-}" | grep -c 'NEEDRESTART-SVC') || n=0
+    [[ -z "$n" ]] && n=0
+    if (( n > 0 )); then printf '%s services %s' "$n" "$(mark warn)"; else printf '0 %s' "$(mark ok)"; fi
+}
+
 # Reset sudo only if we actually escalated, so --report stays pipe-clean.
 cleanup_on_exit() {
     (( SUDO_USED )) && reset_sudo
@@ -233,7 +282,27 @@ render_report_tier_a() {
         printf '%s\n' "${lines[@]}"
     fi
 }
-render_report_tier_b() { echo "(tier B report: TODO)"; }
+render_report_tier_b() {
+    local cve rebuilds restart lines=()
+    cve=$(probe_cve)
+    rebuilds=$(probe_rebuilds)
+    restart=$(probe_needrestart)
+    lines+=("## Tier B — security & upgrade readiness")
+    lines+=("- **Open CVEs**             $cve")
+    lines+=("- **AUR rebuilds needed**   $rebuilds")
+    lines+=("- **Stale-lib services**    $restart")
+    lines+=("- **Arch news**             before \`-Syu\`, check archlinux.org/news")
+    # Pretty when glanceable (interactive TTY); plain markdown when piped or
+    # redirected, so `helldoctor --report | foo` is parseable. The spec calls
+    # --report "glanceable / pipeable" — the `[[ -t 1 ]]` gate satisfies both.
+    # (Tier B spinner output is captured per-probe into $out, so nothing else
+    # leaks to stdout; gum format's ANSI is the only pipeability concern.)
+    if command_exists gum && [[ -t 1 ]]; then
+        printf '%s\n' "${lines[@]}" | gum format
+    else
+        printf '%s\n' "${lines[@]}"
+    fi
+}
 cleanup_menu()         { echo "(cleanup menu: TODO)"; }
 run_clean_all()        { echo "(clean-all: TODO)"; }
 
