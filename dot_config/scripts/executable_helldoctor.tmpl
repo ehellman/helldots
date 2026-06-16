@@ -70,20 +70,27 @@ probe_disk_free() {
 }
 
 probe_pkgcache_size() {
+    # `|| true`, not `|| out=""`: du still prints the grand total to stdout even
+    # when it exits 1 on a root-owned download-* subdir, so keep that total
+    # instead of discarding it. ${out:-n/a} still covers a genuinely empty result.
     local out
-    out=$(du -sh /var/cache/pacman/pkg 2>/dev/null | cut -f1) || out=""
+    out=$(du -sh /var/cache/pacman/pkg 2>/dev/null | cut -f1) || true
     printf '%s' "${out:-n/a}"
 }
 
 probe_paru_cache_size() {
+    # Same as probe_pkgcache_size: a perms warning on a clone/*/pkg subdir makes
+    # du exit 1, but the printed total is still valid — `|| true` keeps it.
     local out
-    out=$(du -sh "${HOME}/.cache/paru" 2>/dev/null | cut -f1) || out=""
+    out=$(du -sh "${HOME}/.cache/paru" 2>/dev/null | cut -f1) || true
     printf '%s' "${out:-n/a}"
 }
 
 probe_journal_size() {
+    # Unit letter is required (not the trailing B): journalctl prints "2.8G" with
+    # no B, and an optional-B regex would also match the sentence's final ".".
     local out
-    out=$(journalctl --disk-usage 2>/dev/null | grep -oE '[0-9.]+[KMGT]?B' | tail -1) || out=""
+    out=$(journalctl --disk-usage 2>/dev/null | grep -oE '[0-9.]+[KMGT]i?B?' | tail -1) || out=""
     printf '%s' "${out:-n/a}"
 }
 
