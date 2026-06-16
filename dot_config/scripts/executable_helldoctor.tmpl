@@ -53,6 +53,13 @@ mark() {
     esac
 }
 
+# is_root <euid> -> true when euid is 0. helldoctor must run as the normal user
+# (it escalates per-action via sudo); run wholesale as root, $HOME becomes /root
+# and every home-scoped probe/cleanup silently targets the wrong account.
+is_root() {
+    (( ${1:-0} == 0 ))
+}
+
 # --- Tier A probes (instant, local, read-only; each degrades to n/a) ---------
 
 # A probe in a `|| fallback` list triggers neither set -e nor the ERR trap, so
@@ -346,6 +353,16 @@ main() {
         "") ;;
         *) echo "helldoctor: unknown option '$1'" >&2; usage >&2; return 2 ;;
     esac
+
+    # --help is handled above; everything else must run as the normal user.
+    if is_root "$EUID"; then
+        if [[ -n "${SUDO_USER:-}" && "$SUDO_USER" != root ]]; then
+            echo "helldoctor: don't run under sudo — run it as $SUDO_USER and it escalates per-action where needed (try: sudo -v && helldoctor)." >&2
+        else
+            echo "helldoctor: run as your normal user, not root — it escalates per-action where needed." >&2
+        fi
+        return 1
+    fi
 
     if (( CLEAN_ALL )); then
         run_clean_all

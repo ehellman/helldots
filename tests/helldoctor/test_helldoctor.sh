@@ -29,6 +29,8 @@ check "disk_status at min"     "ok"      "$(call disk_status 10 10)"
 check "disk_status below min"  "warn"    "$(call disk_status 5 10)"
 check "mark ok"                "✓"       "$(call mark ok)"
 check "mark warn"              "⚠"       "$(call mark warn)"
+check "is_root euid 0"         "yes"     "$(call is_root 0 && echo yes || echo no)"
+check "is_root euid 1000"      "no"      "$(call is_root 1000 && echo yes || echo no)"
 
 # run_clean_all must never invoke gum confirm (it would hang non-interactively).
 # Source the script, stub gum to fail loudly if called, and dry-run the actions
