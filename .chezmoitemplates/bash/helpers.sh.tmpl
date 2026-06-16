@@ -20,7 +20,8 @@ command_exists() {
 ensure_owner() {
     local file="$1"
     local desired_owner="$2"
-    local owner=$(stat -c "%U" "$file")
+    local owner
+    owner=$(stat -c "%U" "$file")
 
     if [ "$owner" != "$desired_owner" ]; then
         log "$file is not owned by $desired_owner"
@@ -35,7 +36,8 @@ ensure_owner() {
 ensure_permissions() {
     local file="$1"
     local desired_permissions="$2"
-    local permissions=$(stat -c "%a" "$file")
+    local permissions
+    permissions=$(stat -c "%a" "$file")
 
     if [ "$permissions" -ne "$desired_permissions" ]; then
         log "$file does not have $desired_permissions permissions."

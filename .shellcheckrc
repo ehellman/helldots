@@ -1,0 +1,6 @@
+# Repo scripts inline shared helpers via chezmoi's `{{ template ... }}` and some
+# source files at runtime. external-sources lets shellcheck follow sourced files
+# (SC1091) and resolve their names (SC2154). NOTE: it does NOT suppress SC2155 —
+# that masked-exit-code rule is fixed at the source (split decl/assign), never
+# disabled here, so it keeps catching regressions in helldoctor's own code.
+external-sources=true

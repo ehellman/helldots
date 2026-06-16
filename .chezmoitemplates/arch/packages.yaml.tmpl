@@ -54,6 +54,9 @@ pacman:
   - unzip
   - man-db
   - usbutils
+  - arch-audit # CVE report for installed packages
+  - rebuild-detector # checkrebuild — AUR soname-break detection
+  - shellcheck # shell lint (dev)
 {{- if eq .host.headless "false" }}
   # non-headless
   - grim
@@ -94,6 +97,7 @@ aur:
   - fnm-bin # node version manager
   - lazygit
   - lazydocker-bin
+  - needrestart # stale-library service detection after upgrades
 {{- if eq .host.distro.de "wayland" }}
   - btrfs-assistant
   {{- if eq .host.headless "false" }}
