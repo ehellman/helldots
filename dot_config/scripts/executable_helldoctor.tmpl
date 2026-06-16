@@ -437,6 +437,39 @@ cleanup_menu() {
         esac
     done <<< "$choices"
 }
+# Plain-bash menu used when gum is unavailable. run_action's own non-gum branch
+# still requires a y/N confirm before any destructive action.
+cleanup_menu_fallback() {
+    echo "gum not found — using plain menu. Install it with: sudo pacman -S gum" >&2
+    local options=(
+        "Trim pacman cache:clean_pkgcache:"
+        "Clean AUR build cache:clean_aur_cache:"
+        "Vacuum journal:vacuum_journal:"
+        "Empty trash:empty_trash:"
+        "Prune dev caches:prune_dev_caches:"
+        "Deep integrity check (slow):deep_integrity_check:"
+        "Clean broken symlinks (HOME):clean_broken_symlinks:--destructive"
+        "Remove orphan packages:remove_orphans:--destructive"
+    )
+    local i entry label fn flag
+    for i in "${!options[@]}"; do
+        IFS=: read -r label _ _ <<< "${options[$i]}"
+        printf '%2d) %s\n' "$((i + 1))" "$label"
+    done
+    local picks
+    read -r -p "Select numbers (space-separated, empty to skip): " picks || return 0
+    [[ -n "$picks" ]] || { log "nothing selected"; return 0; }
+    local n
+    for n in $picks; do
+        # ^[1-9]…: reject 0, else $((0-1)) -> options[-1] (bash last elem) would
+        # mis-map "0" to the most destructive action.
+        [[ "$n" =~ ^[1-9][0-9]*$ ]] || continue
+        entry="${options[$((n - 1))]:-}"
+        [[ -n "$entry" ]] || continue
+        IFS=: read -r label fn flag <<< "$entry"
+        run_action "$label?" "$fn" "$flag"
+    done
+}
 # Safe, reversible cleanups only. No confirms (CLEAN_ALL gates run_action), and
 # deliberately NO remove_orphans / clean_broken_symlinks — those need human eyes.
 run_clean_all() {
