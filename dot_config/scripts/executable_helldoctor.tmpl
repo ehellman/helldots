@@ -25,6 +25,34 @@ Usage:
 EOF
 }
 
+# --- pure helpers (side-effect-free, unit-tested) ----------------------------
+
+# format_size <bytes> -> human-readable IEC size, or "n/a" for non-numeric.
+format_size() {
+    local bytes="${1:-0}"
+    if ! [[ "$bytes" =~ ^[0-9]+$ ]]; then
+        printf 'n/a'
+        return 0
+    fi
+    # --to=iec-i emits IEC-i labels (KiB/MiB/GiB) and "0B" for zero. Plain
+    # --to=iec would emit KB/MB and break the unit tests' KiB/MiB assertions.
+    numfmt --to=iec-i --suffix=B "$bytes"
+}
+
+# disk_status <free_percent> <min_percent> -> "ok" if free>=min else "warn".
+disk_status() {
+    local free="$1" min="$2"
+    if (( free >= min )); then printf 'ok'; else printf 'warn'; fi
+}
+
+# mark <ok|warn> -> check or warning glyph.
+mark() {
+    case "$1" in
+        ok) printf '✓' ;;   # ✓
+        *)  printf '⚠' ;;   # ⚠
+    esac
+}
+
 # Reset sudo only if we actually escalated, so --report stays pipe-clean.
 cleanup_on_exit() {
     (( SUDO_USED )) && reset_sudo
