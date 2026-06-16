@@ -119,8 +119,12 @@ probe_orphans() {
 }
 
 probe_pacfiles() {
+    # `|| true`, not `|| n=0`: find exits 1 when it hits a root-only /etc subdir
+    # (sudoers.d, NetworkManager/system-connections, …), but wc has already
+    # counted every readable match — keep that count instead of false-reporting
+    # 0. (A .pacnew inside an unreadable dir is still missed; rare in practice.)
     local n
-    n=$(find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' \) 2>/dev/null | wc -l) || n=0
+    n=$(find /etc -type f \( -name '*.pacnew' -o -name '*.pacsave' \) 2>/dev/null | wc -l) || true
     [[ -z "$n" ]] && n=0
     if (( n == 0 )); then printf '0 %s' "$(mark ok)"; else printf '%s %s' "$n" "$(mark warn)"; fi
 }
