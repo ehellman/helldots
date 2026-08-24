@@ -1,11 +1,6 @@
 .DS_Store
 .key.txt.age
 
-# Hyprland lua migration: the entry point overrides hyprland.conf the moment it
-# exists in the target, so keep it unapplied until the cutover. Remove this block
-# (and hyprland.conf) in the same commit that switches formats.
-.config/hypr/hyprland.lua
-
 # draupnir only
 {{ if ne .chezmoi.hostname "draupnir" }}
 dot_config/waybar/scripts/executable_amdgpu_stats.sh

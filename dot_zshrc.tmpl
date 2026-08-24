@@ -156,7 +156,7 @@ TRAPUSR1() {
 eval "$(op completion zsh)"; compdef _op op
 
 # reload waybar
-alias rlwb="pkill waybar && hyprctl dispatch exec waybar"
+alias rlwb="pkill waybar; hyprctl dispatch 'hl.dsp.exec_cmd(\"waybar\")'"
 
 # atuin
 eval "$(atuin init zsh)"
