@@ -157,8 +157,10 @@ hl.animation({ leaf = "windowsIn", enabled = true, speed = 5, bezier = "winIn", 
 hl.animation({ leaf = "windowsOut", enabled = true, speed = 3, bezier = "smoothOut", style = "slide" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 5, bezier = "wind", style = "slide" })
 hl.animation({ leaf = "border", enabled = true, speed = 1, bezier = "liner" })
--- used by rainbow borders and rotating colors
-hl.animation({ leaf = "borderangle", enabled = true, speed = 180, bezier = "liner", style = "loop" })
+-- used by rainbow borders and rotating colors.
+-- hyprlang had speed = 180; Lua enforces a maximum of 100, and exceeding it is a
+-- runtime error that aborts the rest of this file.
+hl.animation({ leaf = "borderangle", enabled = true, speed = 100, bezier = "liner", style = "loop" })
 hl.animation({ leaf = "fade", enabled = true, speed = 3, bezier = "smoothOut" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "overshot" })
 hl.animation({ leaf = "workspacesIn", enabled = true, speed = 5, bezier = "winIn", style = "slide" })
