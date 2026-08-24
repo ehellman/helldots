@@ -1,0 +1,8 @@
+{{ if eq .chezmoi.hostname "draupnir" -}}
+{{ template "arch/hypr/draupnir/monitor_profiles.lua" . }}
+{{- else if eq .chezmoi.hostname "revnarch" -}}
+{{ template "arch/hypr/revnarch/monitor_profiles.lua" . }}
+{{- else -}}
+-- No profiles defined for {{ .chezmoi.hostname }}; Hyprland's own defaults apply.
+return {}
+{{- end }}
