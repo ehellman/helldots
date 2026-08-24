@@ -1,10 +1,9 @@
 -- Docking profiles for draupnir.
 --
 -- A profile is picked automatically: the first one whose `requires` outputs are
--- all connected wins, so `laptop-only` must stay last. Where two profiles
--- describe the same hardware on different ports, auto-detect cannot tell them
--- apart — use the cycle bind (SUPER + SHIFT + P) or set HYPR_MONITOR_PROFILE
--- before launching Hyprland.
+-- all connected wins, so `laptop-only` must stay last. Two profiles that key on
+-- the same port are indistinguishable until they carry descriptions — the
+-- earlier one always wins.
 --
 -- TODO: `requires` matches an output name or a substring of the monitor
 -- description. Descriptions survive replugging into a different port, names do
@@ -47,8 +46,8 @@ return {
         },
     },
     {
-        -- Same port as lg-c2-below, so auto-detect will never reach this one.
-        -- Select it explicitly until both monitors have descriptions here.
+        -- Unreachable: lg-c2-below claims DP-3 first. Give both entries real
+        -- descriptions to separate them.
         name = "stadium-single",
         requires = { "DP-3" },
         monitors = {
