@@ -30,6 +30,17 @@ end
 
 return {
     {
+        -- Matched on the HP's serial rather than a port: DP-3 is also what
+        -- lg-c2-below and stadium-single claim, and this entry must win.
+        name = "varner",
+        requires = { "CNK5250BGM" },
+        monitors = {
+            { output = "DP-3", mode = "2560x1440@59.95", position = "0x0", scale = 1, vrr = 0, bitdepth = 8 },
+            -- laptop directly below the HP: 1440 logical px tall at scale 1
+            laptop_at("0x1440"),
+        },
+    },
+    {
         name = "lg-c2-left",
         requires = { "DP-2" },
         monitors = {
